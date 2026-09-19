@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block title %}Shows — Watchi{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Shows</h1>
+    <p>{{ series_list|length }} shows in your collection.</p>
+</div>
+
+<div class="sort-box">
+    <label for="sort">Sort:</label>
+    <select id="sort" onchange="window.location.href=this.value">
+        <option value="/series?sort=recent" {{ "selected" if current_sort == "recent" }}>Recently Added</option>
+        <option value="/series?sort=first_added" {{ "selected" if current_sort == "first_added" }}>First Added</option>
+        <option value="/series?sort=title_asc" {{ "selected" if current_sort == "title_asc" }}>Title A → Z</option>
+        <option value="/series?sort=title_desc" {{ "selected" if current_sort == "title_desc" }}>Title Z → A</option>
+        <option value="/series?sort=favorites" {{ "selected" if current_sort == "favorites" }}>Favorites</option>
+    </select>
+</div>
+
+{% if series_list %}
+<div class="card-row-wrapper">
+    <button class="scroll-btn scroll-left"
+        onmousedown="startScroll(-1)"
+        onmouseup="stopScroll()"
+        onmouseleave="stopScroll()">‹</button>
+
+    <div class="card-row" id="seriesRow">
+        {% for s in series_list %}
+        {% set progress = s.progress_percent() %}
+
+        <div class="card-flip-wrapper" id="series-{{ loop.index }}">
+            <div class="card-flip-inner">
+
+                <!-- FRONT -->
+                <div class="card-flip-front movie-card-h"
+                     onclick="document.getElementById('series-{{ loop.index }}').classList.add('flipped')">
+
+                    <a href="{{ url_for('showdetail', title=s.title) }}"
+                    class="card-detail-link"
+                    onclick="event.stopPropagation()"
+                    title="View details">↗</a>
+
+                    {% if s.poster and s.poster != "N/A" %}
+                    <img src="{{ s.poster }}" class="card-poster" alt="{{ s.title }}">
+                    {% else %}
+                    <div class="card-no-poster">📺</div>
+                    {% endif %}
+
+                    <div class="card-overlay">
+                        <div class="card-h-number">{{ loop.index }}</div>
+                        <div class="card-h-title">{{ s.title }}</div>
+
+                        {% if s.year %}
+                        <div class="card-h-year">{{ s.year }}</div>
+                        {% endif %}
+
+                        <div class="card-h-bottom" style="margin-bottom: 6px;">
+                            {% if s.is_watching() %}
+                                <span class="badge-watching">Watching</span>
+                            {% elif s.is_paused() %}
+                                <span class="badge-paused">Paused</span>
+                            {% elif s.is_completed() %}
+                                <span class="watched">Completed</span>
+                            {% else %}
+                                <span class="watchlist">Watchlist</span>
+                            {% endif %}
+
+                            {% if s.rating and s.rating != 0 %}
+                                <span class="card-h-rating">⭐ {{ s.rating }}</span>
+                            {% endif %}
+                            <button type="button" class="fav-btn {{ 'is-fav' if s.is_favorite }}"
+                                onclick="toggleFavorite(event, this, '/toggleseriesfavorite', 'title', '{{ s.title }}')"
+                                aria-label="Toggle favorite">
+                                <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.8-10-9.5C.3 7.7 2.4 4 6 4c2.1 0 3.6 1.1 4.5 2.5C11.4 5.1 12.9 4 15 4c3.6 0 5.7 3.7 4 7.5C19.5 16.2 12 21 12 21z"/></svg>
+                            </button>
+                        </div>
+
+                        {% if not s.is_watchlist() %}
+
+                            {% if s.is_anime() %}
+                            <!-- ANIME — absolute episode display -->
+                            <div class="series-progress-info">
+                                Episode {{ s.episodes_watched }}
+                                {% if s.total_episodes %}
+                                    of {{ s.total_episodes }}
+                                {% endif %}
+                            </div>
+
+                            {% if s.total_episodes > 0 %}
+                            <div class="series-progress-bar">
+                                <div class="series-progress-fill"
+                                     style="width: {{ progress }}%;">
+                                </div>
+                            </div>
+                            <div class="series-progress-text">
+                                {{ s.episodes_watched }} / {{ s.total_episodes }} eps
+                                · {{ progress }}%
+                            </div>
+                            {% endif %}
+
+                            {% else %}
+                            <!-- TV — season/episode display -->
+                            <div class="series-progress-info">
+                                S{{ s.current_season }} E{{ s.current_episode }}
+                                {% if s.episodes_in_current_season %}
+                                    of {{ s.episodes_in_current_season }}
+                                {% endif %}
+                            </div>
+
+                            {% if s.status == 'completed' %}
+                                {% set tv_prog = 100 %}
+                            {% else %}
+                                {% if s.episodes_in_current_season and s.episodes_in_current_season > 0 %}
+                                    {% set tv_prog = [(s.current_episode * 100 // s.episodes_in_current_season), 100] | min %}
+                                {% else %}
+                                    {% set tv_prog = 0 %}
+                                {% endif %}
+                            {% endif %}
+
+                            <div class="series-progress-bar">
+                                <div class="series-progress-fill" style="width: {{ tv_prog }}%;"></div>
+                            </div>
+
+                            <div class="series-progress-text">
+                                {% if s.episodes_in_current_season and s.episodes_in_current_season > 0 %}
+                                    Episode {{ s.current_episode }} of {{ s.episodes_in_current_season }}
+                                {% else %}
+                                    Episode {{ s.current_episode }} (Total episodes unknown)
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- BACK -->
+                <div class="card-flip-back"
+                    onclick="document.getElementById('series-{{ loop.index }}').classList.remove('flipped')">
+
+                    <p class="flip-back-title">{{ s.title }}</p>
+
+                    {% if s.imdb_rating %}
+                    <p class="flip-back-imdb">IMDb ⭐ {{ s.imdb_rating }}</p>
+                    {% endif %}
+
+                    <form method="POST" action="/updateseries"
+                        onclick="event.stopPropagation()">
+                        <input type="hidden" name="title" value="{{ s.title }}">
+                        <input type="hidden" name="show_type" value="{{ s.show_type }}">
+
+                        <select name="status">
+                            <option value="watchlist"
+                                {{ 'selected' if s.is_watchlist() }}>Watchlist</option>
+                            <option value="watching"
+                                {{ 'selected' if s.is_watching() }}>Watching</option>
+                            <option value="paused"
+                                {{ 'selected' if s.is_paused() }}>Paused</option>
+                            <option value="completed"
+                                {{ 'selected' if s.is_completed() }}>Completed</option>
+                        </select>
+
+                        {% if s.is_anime() %}
+                        <input type="number" name="episodes_watched"
+                            value="{{ s.episodes_watched }}"
+                            min="0" placeholder="Episodes watched">
+                        <input type="number" name="total_episodes"
+                            value="{{ s.total_episodes }}"
+                            min="0" placeholder="Total episodes">
+                        {% else %}
+                        <input type="number" name="current_season"
+                            value="{{ s.current_season }}"
+                            min="1" placeholder="Season">
+                        <input type="number" name="current_episode"
+                            value="{{ s.current_episode }}"
+                            min="0" placeholder="Episode">
+                        {% endif %}
+
+                        <input type="number" name="rating"
+                            value="{{ s.rating if s.rating else '' }}"
+                            min="1" max="10"
+                            placeholder="Your rating 1–10">
+
+                        <button type="submit" class="flip-btn flip-btn-watch">
+                            ✓ Update
+                        </button>
+                    </form>
+
+                    <form method="POST" action="/deleteseries"
+                        onclick="event.stopPropagation()">
+                        <input type="hidden" name="title" value="{{ s.title }}">
+                        <button type="submit" class="flip-btn flip-btn-delete">
+                            🗑 Delete
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="scroll-btn scroll-right"
+        onmousedown="startScroll(1)"
+        onmouseup="stopScroll()"
+        onmouseleave="stopScroll()">›</button>
+</div>
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📺</div>
+    <h2>No shows yet</h2>
+    <p>Start tracking your favourite shows and anime.</p>
+    <a href="/add" class="btn-primary"
+       style="margin-top: 20px; display: inline-block;">
+        + Add Show
+    </a>
+</div>
+{% endif %}
+
+<script>
+let scrollInterval = null;
+
+function startScroll(direction) {
+    const row = document.getElementById("seriesRow");
+    row.scrollBy({ left: direction * 220, behavior: "smooth" });
+    scrollInterval = setTimeout(() => {
+        scrollInterval = setInterval(() => {
+            row.scrollBy({ left: direction * 180, behavior: "smooth" });
+        }, 150);
+    }, 400);
+}
+
+function stopScroll() {
+    clearTimeout(scrollInterval);
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,513 @@
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.hero {
+    text-align: center;
+    padding: 60px 0 40px;
+}
+
+.hero-eyebrow {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+}
+
+.hero-title {
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 17px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 48px;
+}
+
+/* ============================================
+   STAT CARDS
+   ============================================ */
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 100px;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   HERO ACTION BUTTONS ROW
+   ============================================ */
+
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* ============================================
+   FEATURED MOVIE CARD — split layout
+   ============================================ */
+
+.featured-card {
+    display: flex;
+    align-items: stretch;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 40px;
+    overflow: hidden;
+    height: 240px;
+    width: 100%;
+    transition: transform var(--transition), box-shadow var(--transition);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: relative;
+}
+
+.featured-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 40% 50%,
+        rgba(200, 169, 110, 0.08) 0%,
+        transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.featured-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    border-color: rgba(200, 169, 110, 0.25);
+}
+.featured-series-progress {
+    margin-top: 4px;
+}
+
+.featured-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.featured-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 50px;
+}
+
+.featured-progress-text {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+/* Left — poster */
+.featured-poster-side {
+    flex: 0 0 160px;
+    overflow: hidden;
+    position: relative;
+}
+
+.featured-poster-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    transition: transform 0.5s ease;
+    display: block;
+}
+
+.featured-card:hover .featured-poster-img {
+    transform: scale(1.06);
+}
+
+/* Right — info */
+.featured-info-side {
+    flex: 1;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.featured-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.featured-title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1;
+    color: var(--text);
+    margin: 0;
+}
+
+.featured-details {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.featured-year {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.featured-genre {
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.featured-director {
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.featured-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.featured-rating {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.featured-imdb {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.06);
+    padding: 3px 10px;
+    border-radius: 50px;
+    border: 1px solid var(--border);
+    font-weight: 500;
+}
+
+.featured-refresh {
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.45;
+    margin-top: 2px;
+    letter-spacing: 0.2px;
+}
+
+/* ============================================
+   STATS PAGE
+   ============================================ */
+
+.stats-hero {
+    text-align: center;
+    padding: 48px 0 40px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+}
+
+.stats-hero-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+.stats-hero-number {
+    font-size: 96px;
+    font-weight: 800;
+    letter-spacing: -4px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.stats-hero-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.stats-hero-split {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.stats-hero-divider {
+    opacity: 0.3;
+}
+
+/* ── Sections ── */
+
+.stats-section {
+    margin-bottom: 48px;
+}
+
+.stats-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+/* ── Stat grid ── */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.stat-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 16px 16px;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.stat-block:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+
+.stat-block-number {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-block-genre {
+    font-size: 18px;
+    letter-spacing: -0.5px;
+}
+
+.stat-block-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.stat-block-bar {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.stat-block-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 50px;
+    transition: width 0.6s ease;
+}
+
+.accent-green { background: #5dbb7f; }
+.accent-blue  { background: #6495ed; }
+.accent-gold  { background: var(--accent); }
+.accent-orange { background: #e0a060; }
+
+/* ── Highlight card ── */
+
+.stats-highlight {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-top: 8px;
+}
+
+.stats-highlight-label {
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.stats-highlight-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.stats-highlight-poster {
+    width: 44px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.stats-highlight-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.stats-highlight-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+/* ── Type split ── */
+
+.stats-type-split {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.stats-type-card {
+    flex: 1;
+    text-align: center;
+    padding: 20px 16px;
+}
+
+.stats-type-divider {
+    width: 1px;
+    height: 60px;
+    background: var(--border);
+}
+
+.stats-type-icon {
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.stats-type-number {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+.stats-type-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+/* ── Episodes banner ── */
+
+.stats-episodes-banner {
+    background: linear-gradient(135deg,
+        rgba(200, 169, 110, 0.12) 0%,
+        rgba(200, 169, 110, 0.05) 100%);
+    border: 1px solid rgba(200, 169, 110, 0.2);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    text-align: center;
+}
+
+.stats-episodes-number {
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stats-episodes-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+}

@@ -1,0 +1,8 @@
+.env
+watchi.db
+__pycache__/
+*.pyc
+.vscode/
+venv/
+env/
+static/avatars/

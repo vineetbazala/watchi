@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block title %}Stats — Watchi{% endblock %}
+
+{% block content %}
+
+<!-- OVERALL HERO -->
+<div class="stats-hero reveal">
+    <div class="stats-hero-eyebrow">✦ Your Collection</div>
+    <div class="stats-hero-number">{{ total_collection }}</div>
+    <div class="stats-hero-label">Total Titles</div>
+    <div class="stats-hero-split">
+        <span>🎬 {{ total_movies }} Movies</span>
+        <span class="stats-hero-divider">·</span>
+        <span>📺 {{ total_shows }} Shows</span>
+    </div>
+</div>
+
+<div class="stats-section reveal reveal-delay-1">
+    <!-- MOVIES SECTION -->
+    <div class="stats-section">
+        <div class="stats-section-title">🎬 Movies</div>
+
+        <div class="stats-grid">
+            <div class="stat-block">
+                <div class="stat-block-number">{{ watched_count }}</div>
+                <div class="stat-block-label">Watched</div>
+                {% if total_movies > 0 %}
+                <div class="stat-block-bar">
+                    <div class="stat-block-fill"
+                        style="width: {{ ((watched_count / total_movies) * 100)|round|int }}%;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="stat-block">
+                <div class="stat-block-number">{{ watchlist_count }}</div>
+                <div class="stat-block-label">Watchlist</div>
+                {% if total_movies > 0 %}
+                <div class="stat-block-bar">
+                    <div class="stat-block-fill accent-blue"
+                        style="width: {{ ((watchlist_count / total_movies) * 100)|round|int }}%;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="stat-block">
+                <div class="stat-block-number">{{ avg_rating }}</div>
+                <div class="stat-block-label">Avg Rating</div>
+                {% if avg_rating > 0 %}
+                <div class="stat-block-bar">
+                    <div class="stat-block-fill accent-gold"
+                        style="width: {{ ((avg_rating / 10) * 100)|round|int }}%;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="stat-block">
+                <div class="stat-block-number stat-block-genre">{{ top_genre }}</div>
+                <div class="stat-block-label">Top Genre</div>
+            </div>
+        </div>
+
+        {% if top_movie %}
+        <div class="stats-highlight">
+            <div class="stats-highlight-label">⭐ Highest Rated</div>
+            <div class="stats-highlight-content">
+                {% if top_movie.poster and top_movie.poster != "N/A" %}
+                <img src="{{ top_movie.poster }}" class="stats-highlight-poster">
+                {% endif %}
+                <div>
+                    <div class="stats-highlight-title">{{ top_movie.title }}</div>
+                    <div class="stats-highlight-sub">
+                        {{ top_movie.rating }}/10
+                        {% if top_movie.year %}· {{ top_movie.year }}{% endif %}
+                        {% if top_movie.genre %}· {{ top_movie.genre }}{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="stats-section reveal reveal-delay-2">
+    <!-- SHOWS SECTION -->
+    <div class="stats-section">
+        <div class="stats-section-title">📺 Shows</div>
+
+        <div class="stats-grid">
+            <div class="stat-block">
+                <div class="stat-block-number">{{ completed_shows }}</div>
+                <div class="stat-block-label">Completed</div>
+                {% if total_shows > 0 %}
+                <div class="stat-block-bar">
+                    <div class="stat-block-fill accent-green"
+                        style="width: {{ ((completed_shows / total_shows) * 100)|round|int }}%;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="stat-block">
+                <div class="stat-block-number">{{ watching_shows }}</div>
+                <div class="stat-block-label">Watching</div>
+                {% if total_shows > 0 %}
+                <div class="stat-block-bar">
+                    <div class="stat-block-fill accent-blue"
+                        style="width: {{ ((watching_shows / total_shows) * 100)|round|int }}%;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="stat-block">
+                <div class="stat-block-number">{{ paused_shows }}</div>
+                <div class="stat-block-label">Paused</div>
+                {% if total_shows > 0 %}
+                <div class="stat-block-bar">
+                    <div class="stat-block-fill accent-orange"
+                        style="width: {{ ((paused_shows / total_shows) * 100)|round|int }}%;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="stat-block">
+                <div class="stat-block-number">{{ watchlist_shows }}</div>
+                <div class="stat-block-label">Watchlist</div>
+                {% if total_shows > 0 %}
+                <div class="stat-block-bar">
+                    <div class="stat-block-fill"
+                        style="width: {{ ((watchlist_shows / total_shows) * 100)|round|int }}%;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Type split -->
+        <div class="stats-type-split">
+            <div class="stats-type-card">
+                <div class="stats-type-icon">⛩</div>
+                <div class="stats-type-number">{{ anime_count }}</div>
+                <div class="stats-type-label">Anime</div>
+            </div>
+            <div class="stats-type-divider"></div>
+            <div class="stats-type-card">
+                <div class="stats-type-icon">📺</div>
+                <div class="stats-type-number">{{ tv_count }}</div>
+                <div class="stats-type-label">TV Shows</div>
+            </div>
+        </div>
+
+        {% if total_eps_watched > 0 %}
+        <div class="stats-episodes-banner">
+            <div class="stats-episodes-number">{{ total_eps_watched }}</div>
+            <div class="stats-episodes-label">Anime Episodes Watched</div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+<script>
+function countUp(el, target, duration) {
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+        start += step;
+        if (start >= target) {
+            el.textContent = target;
+            clearInterval(timer);
+        } else {
+            el.textContent = Math.floor(start);
+        }
+    }, 16);
+}
+
+window.addEventListener('load', () => {
+    document.querySelectorAll('.stat-block-number').forEach(el => {
+        const target = parseFloat(el.textContent);
+        if (!isNaN(target) && Number.isInteger(target)) {
+            el.textContent = '0';
+            setTimeout(() => countUp(el, target, 1000), 300);
+        }
+    });
+});
+</script>
+
+{% endblock %}

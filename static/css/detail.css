@@ -1,0 +1,558 @@
+*{ box-sizing: border-box; }
+
+.dp{ max-width: 1160px; margin: 0 auto; padding: 24px 24px 70px; }
+
+/* ============================================
+   HERO
+   ============================================ */
+
+.dp-hero{
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 460px;
+  height: auto;
+  margin-bottom: 24px;
+  background: #08080a;
+  box-shadow: 0 30px 70px -20px rgba(0,0,0,0.5);
+  animation: dpFadeIn .6s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+.dp-hero-bg{
+  position: absolute; inset: 0;
+  background-size: cover;
+  background-position: center 18%;
+  background-color: #14141a;
+  filter: brightness(1.08) saturate(1.15);
+}
+
+.dp-hero-scrim{
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(100deg, rgba(5,5,7,0.94) 0%, rgba(5,5,7,0.8) 22%, rgba(5,5,7,0.4) 40%, rgba(5,5,7,0.06) 56%, transparent 65%),
+    linear-gradient(0deg, rgba(5,5,7,0.9) 0%, rgba(5,5,7,0.4) 40%, rgba(5,5,7,0.08) 65%, transparent 80%);
+}
+
+.dp-hero-content{
+  position: relative; z-index: 2;
+  height: 100%;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 32px;
+  padding: 40px 44px;
+}
+
+.dp-hero-main{
+  flex: 1; min-width: 0; max-width: 500px; color: #f5f4f1;
+  transform: translateY(24px); opacity: 0;
+  animation: dpRise .7s cubic-bezier(0.16,1,0.3,1) .18s both;
+}
+
+.dp-eyebrow{
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  color: #d8b876;
+  font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  margin-bottom: 9px;
+}
+.dp-eyebrow svg{ width: 13px; height: 13px; flex-shrink: 0; }
+.dp-eyebrow-genre{ color: rgba(255,255,255,0.55); font-weight: 600; letter-spacing: .04em; }
+
+.dp-title{
+  font-size: 33px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.06;
+  margin-bottom: 8px; color: #fff;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
+.dp-title--hidden{ display: none; }
+
+.dp-logo{
+  display: block;
+  max-width: 230px; max-height: 68px; width: auto; height: auto;
+  object-fit: contain; object-position: left bottom;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 4px 20px rgba(0,0,0,0.55));
+}
+
+.dp-hero-progress-line{
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7);
+  margin-bottom: 11px;
+}
+.dp-hero-progress-line .dp-dot{ width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.35); }
+
+/* metadata chips */
+.dp-chips{ display: flex; align-items: center; gap: 7px; row-gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.dp-chip{
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 23px; padding: 0 11px; border-radius: 50px;
+  font-size: 11px; font-weight: 700; line-height: 1; white-space: nowrap;
+  box-sizing: border-box; text-decoration: none;
+}
+.dp-chip--outline{ background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.18); }
+.dp-chip--watching{ background: rgba(100,149,237,0.25); color: #a9c1ff; }
+.dp-chip--completed,
+.dp-chip--watched{ background: rgba(93,187,127,0.25); color: #8fe3ab; }
+.dp-chip--paused{ background: rgba(224,160,96,0.25); color: #f0b878; }
+.dp-chip--watchlist{ background: rgba(255,255,255,0.16); color: #fff; }
+.dp-chip--imdb{ background: rgba(245,197,24,0.18); color: #f5c518; transition: background .2s, box-shadow .2s; }
+a.dp-chip--imdb{ cursor: pointer; }
+a.dp-chip--imdb:hover{ background: rgba(245,197,24,0.3); box-shadow: 0 0 16px rgba(245,197,24,0.35); }
+.dp-chip--rated{ background: linear-gradient(135deg, rgba(224,192,133,0.28), rgba(200,169,110,0.22)); color: #ecd6a4; }
+
+.dp-plot{
+  max-width: 540px; color: rgba(255,255,255,0.85);
+  font-size: 13.5px; line-height: 1.5; margin-bottom: 6px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+  display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* SIDE column — pinned to the hero's bottom-right corner via absolute
+   positioning, so it can NEVER be pushed around by the action buttons
+   or the rating popover growing/opening on the left side. */
+.dp-hero-side{
+  flex-shrink: 0; text-align: right; max-width: 260px;
+  display: flex; flex-direction: column; gap: 14px;
+  padding-bottom: 0px;
+  margin-top: 28px;
+  color: rgba(255,255,255,0.85);
+  transform: translateY(24px); opacity: 0;
+  animation: dpRise .7s cubic-bezier(0.16,1,0.3,1) .3s both;
+}
+.dp-hero-credit{ font-size: 12.5px; line-height: 1.45; }
+.dp-hero-credit b{
+  display: block; color: rgba(255,255,255,0.48);
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.dp-hero-credit span{ display: block; }
+
+/* ============================================
+   ACTIONS — primary row (play + colored icon buttons)
+   and a separate secondary row so delete never
+   scrambles the primary row's alignment.
+   ============================================ */
+
+.dp-actions{ display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.dp-actions-row{ display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.dp-actions-row form,
+.dp-actions form{ margin: 0; }
+.dp-inline-form{ display: inline-flex; gap: 8px; align-items: center; flex-shrink: 0; }
+
+.dp-mini-input{
+  width: 54px; padding: 0 8px; height: 37px;
+  border-radius: 50px;
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; font-family: inherit; font-size: 13px; font-weight: 700; text-align: center;
+  flex-shrink: 0;
+}
+.dp-mini-input::placeholder{ color: rgba(255,255,255,0.45); }
+
+/* remove native number-input spinner arrows so the box stays clean */
+.dp-mini-input::-webkit-inner-spin-button,
+.dp-mini-input::-webkit-outer-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+.dp-mini-input[type=number]{
+  -moz-appearance: textfield;
+}
+
+.dp-btn{
+  display: inline-flex; align-items: center; gap: 6px; height: 37px;
+  padding: 0 16px;
+  border-radius: 50px;
+  font-size: 12.5px; font-weight: 700;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; cursor: pointer; text-decoration: none;
+  font-family: inherit; white-space: nowrap;
+  transition: transform .25s cubic-bezier(0.4,0,0.2,1), background .25s, box-shadow .25s, border-color .25s;
+}
+.dp-btn:hover{
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 0 26px rgba(255,255,255,0.3), 0 10px 24px rgba(0,0,0,0.3);
+}
+.dp-btn:active{ transform: translateY(0) scale(0.97); }
+
+.dp-btn--success{ border-color: rgba(93,187,127,0.35); color: #a6f0bd; }
+.dp-btn--success:hover{
+  background: rgba(93,187,127,0.2);
+  box-shadow: 0 0 28px rgba(93,187,127,0.45), 0 10px 24px rgba(0,0,0,0.3);
+  border-color: rgba(93,187,127,0.55);
+}
+/* the static "Watched" badge — non-interactive, keeps a quiet permanent glow as a state indicator */
+.dp-btn--success.dp-btn--static{
+  background: rgba(93,187,127,0.14);
+  box-shadow: 0 0 18px rgba(93,187,127,0.22);
+}
+.dp-btn--static{ cursor: default; }
+.dp-btn--static:hover{ transform: none; }
+
+.dp-btn--gold{ border-color: rgba(232,166,74,0.35); color: #f0d9ac; }
+.dp-btn--gold:hover{
+  background: rgba(232,166,74,0.2);
+  box-shadow: 0 0 28px rgba(232,166,74,0.45), 0 10px 24px rgba(0,0,0,0.3);
+  border-color: rgba(232,166,74,0.55);
+}
+
+.dp-btn--danger{ border-color: rgba(220,53,69,0.3); color: #ff9aa2; }
+.dp-btn--danger:hover{
+  background: rgba(220,53,69,0.2);
+  box-shadow: 0 0 28px rgba(220,53,69,0.45), 0 10px 24px rgba(0,0,0,0.3);
+  border-color: rgba(220,53,69,0.5);
+}
+
+/* status pill for series — icon + native select */
+.dp-select-wrap{
+  display: inline-flex; align-items: center; gap: 7px; height: 37px;
+  padding: 0 15px; border-radius: 50px;
+  min-width: 130px; flex-shrink: 0;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #a6f0bd;
+  transition: background .25s, box-shadow .25s, border-color .25s;
+}
+.dp-select-wrap:hover{
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 0 26px rgba(255,255,255,0.3), 0 10px 24px rgba(0,0,0,0.3);
+}
+.dp-select-wrap svg{ flex-shrink: 0; }
+
+.dp-select{
+  background: none; border: none; appearance: none; -webkit-appearance: none;
+  color: #fff; padding: 0; margin: 0; width: 100%;
+  font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dp-select option{ background: #14141a; color: #fff; }
+
+/* rating popover — a small floating card, positioned absolutely so it
+   NEVER affects surrounding layout, anchored directly under its trigger
+   button via .dp-btn-wrap. Locked to a single horizontal row (flex-wrap:
+   nowrap + fixed height) so the input and Confirm button can never stack
+   into a circle-looking blob. */
+.dp-btn-wrap{
+  position: relative;
+  display: inline-flex;
+}
+
+.dp-rate-pop{
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  height: 49px;
+  background: rgba(20,20,26,0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 6px;
+  border-radius: 50px;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+  z-index: 30;
+  white-space: nowrap;
+}
+.dp-rate-pop.open{ display: inline-flex; }
+
+.dp-pop-confirm{
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 37px; padding: 0 16px; border-radius: 50px; flex-shrink: 0;
+  background: linear-gradient(135deg, #e8c98d, #c8a96e);
+  color: #16130c; border: none; cursor: pointer;
+  font-family: inherit; font-size: 12.5px; font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px rgba(200,169,110,0.35);
+  transition: transform .2s cubic-bezier(0.4,0,0.2,1), box-shadow .2s;
+}
+.dp-pop-confirm:hover{ transform: translateY(-2px) scale(1.03); box-shadow: 0 10px 26px rgba(200,169,110,0.5); }
+.dp-pop-confirm svg{ flex-shrink: 0; display: block; pointer-events: none; }
+
+/* subtle text-link actions — deliberately low-key so Play + Status stay the visual focus */
+.dp-link-btn{
+  background: none; border: none; cursor: pointer;
+  font-family: inherit; font-size: 12.5px; font-weight: 600;
+  color: rgba(255,255,255,0.62);
+  display: inline-flex; align-items: center; height: 40px; padding: 0 4px;
+  flex-shrink: 0;
+  text-decoration: underline; text-underline-offset: 3px;
+  transition: color .2s;
+}
+.dp-link-btn:hover{ color: rgba(255,255,255,0.92); }
+
+@keyframes dpFadeIn{ from{ opacity: 0; } to{ opacity: 1; } }
+@keyframes dpRise{ to{ transform: translateY(0); opacity: 1; } }
+
+/* ============================================
+   PROGRESS — follows site theme
+   ============================================ */
+
+.dp-progress{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
+  margin-bottom: 44px;
+}
+.dp-ring{ position: relative; width: 62px; height: 62px; flex-shrink: 0; }
+.dp-ring svg{ width: 62px; height: 62px; transform: rotate(-90deg); }
+.dp-ring-bg{ fill: none; stroke: var(--border); stroke-width: 5; }
+.dp-ring-fg{
+  fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round;
+  stroke-dasharray: 163.4;
+  transition: stroke-dashoffset 1.3s cubic-bezier(0.16,1,0.3,1);
+}
+.dp-ring-pct{ position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--text); }
+.dp-progress-text{ flex: 1; min-width: 200px; }
+.dp-progress-label{ font-size: 12.5px; color: var(--text-muted); margin-bottom: 4px; }
+.dp-progress-value{ font-size: 16px; font-weight: 700; color: var(--text); }
+.dp-progress-status{ flex-shrink: 0; }
+.dp-progress-status .dp-chip{ font-size: 11.5px; }
+.dp-progress-status .dp-chip--watching{ background: rgba(100,149,237,0.15); color: #6495ed; }
+.dp-progress-status .dp-chip--completed,
+.dp-progress-status .dp-chip--watched{ background: rgba(93,187,127,0.15); color: #5dbb7f; }
+.dp-progress-status .dp-chip--paused{ background: rgba(224,160,96,0.15); color: #e0a060; }
+.dp-progress-status .dp-chip--watchlist{ background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+
+.dp-section{ margin-bottom: 48px; }
+.dp-section-head{ display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+.dp-section-title-group{ display: flex; align-items: center; gap: 12px; }
+.dp-section-head h2{ font-size: 20px; font-weight: 800; color: var(--text); letter-spacing: -0.01em; }
+.dp-season-poster{ width: 34px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+.dp-section-head-right{ display: flex; align-items: center; gap: 12px; }
+.dp-sub{ font-size: 12.5px; color: var(--text-muted); }
+.dp-select--small{
+  background: var(--bg); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 14px; border-radius: 50px; font-size: 12.5px; font-weight: 700; cursor: pointer;
+}
+.dp-empty-note{ color: var(--text-muted); font-size: 13px; }
+
+/* ============================================
+   CAROUSEL — shared scroll-arrow wrapper
+   ============================================ */
+
+.dp-carousel{ position: relative; display: flex; align-items: center; gap: 10px; }
+.dp-scroll-btn{
+  flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  line-height: 1; padding: 0;
+}
+.dp-scroll-btn:hover{ background: var(--accent); color: #08080a; transform: scale(1.08); box-shadow: 0 6px 18px rgba(0,0,0,0.2); }
+
+/* ============================================
+   EPISODES — real TMDb stills, gradient fallback
+   art underneath (never a repeated poster)
+   ============================================ */
+
+.dp-ep-strip{ display: flex; gap: 16px; overflow-x: auto; padding: 6px 2px 10px; scrollbar-width: none; flex: 1; }
+.dp-ep-strip::-webkit-scrollbar{ display: none; }
+
+.dp-ep-card{
+  flex-shrink: 0; width: 260px;
+  border-radius: 16px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+.dp-ep-card:hover{ transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 16px 32px rgba(0,0,0,0.18); }
+.dp-ep-card.is-upcoming{ opacity: .55; }
+
+.dp-ep-thumb{
+  position: relative; width: 100%; aspect-ratio: 16/9;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.dp-ep-thumb::before{
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: repeating-linear-gradient(115deg, rgba(255,255,255,0.06) 0 2px, transparent 2px 26px);
+}
+.dp-ep-still{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.dp-ep-scrim{ position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.7) 100%); }
+.dp-ep-play{
+  position: relative; z-index: 2;
+  width: 30px; height: 30px; color: rgba(255,255,255,0.9);
+  opacity: 0; transform: scale(0.8);
+  transition: opacity .25s cubic-bezier(0.4,0,0.2,1), transform .25s cubic-bezier(0.4,0,0.2,1);
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+.dp-ep-card:hover .dp-ep-play{ opacity: 1; transform: scale(1); }
+
+.dp-ep-num{
+  position: absolute; top: 10px; left: 10px; z-index: 2;
+  background: rgba(8,8,10,0.6); color: #fff;
+  padding: 3px 10px; border-radius: 50px; font-size: 10.5px; font-weight: 800;
+  backdrop-filter: blur(6px);
+}
+.dp-ep-check{
+  position: absolute; bottom: 10px; right: 10px; z-index: 2;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent); display: flex; align-items: center; justify-content: center;
+}
+.dp-ep-body{ padding: 14px 16px; }
+.dp-ep-title{
+  font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 5px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dp-ep-sub{
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-size: 11px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px;
+}
+.dp-ep-rating{ display: inline-flex; align-items: center; gap: 3px; }
+.dp-ep-rating svg{ color: #f5c518; }
+.dp-ep-overview{
+  font-size: 11.5px; color: var(--text-muted); line-height: 1.4;
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin: 0;
+}
+
+/* gradient palette, cycled across episode/cast cards*/
+.dp-grad-1{ background: linear-gradient(135deg, #4a3620 0%, #1a140c 100%); }
+.dp-grad-2{ background: linear-gradient(135deg, #1e3a4a 0%, #0c1620 100%); }
+.dp-grad-3{ background: linear-gradient(135deg, #3a1e30 0%, #160c14 100%); }
+.dp-grad-4{ background: linear-gradient(135deg, #1e3a2a 0%, #0c1610 100%); }
+.dp-grad-5{ background: linear-gradient(135deg, #3a2a1e 0%, #16100c 100%); }
+.dp-grad-6{ background: linear-gradient(135deg, #26264a 0%, #0e0e1c 100%); }
+
+/* ============================================
+   CAST & CREW — real photos, gradient+initials
+   fallback layered underneath (never blank)
+   ============================================ */
+
+.dp-cast-strip{ display: flex; gap: 22px; overflow-x: auto; padding: 6px 2px 10px; scrollbar-width: none; flex: 1; }
+.dp-cast-strip::-webkit-scrollbar{ display: none; }
+
+.dp-cast-card{ flex-shrink: 0; width: 96px; text-align: center; transition: transform var(--transition); }
+.dp-cast-card:hover{ transform: translateY(-4px); }
+
+.dp-cast-av{
+  position: relative;
+  width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 10px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transition: box-shadow var(--transition);
+  overflow: hidden;
+}
+.dp-cast-card:hover .dp-cast-av{ box-shadow: 0 12px 28px rgba(0,0,0,0.25); }
+.dp-cast-initials{ color: #fff; font-size: 20px; font-weight: 800; }
+.dp-cast-av img{
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.dp-cast-name{ font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.3; margin-bottom: 2px; }
+.dp-cast-role{ font-size: 10.5px; color: var(--text-muted); }
+
+/* ============================================
+   SIMILAR TITLES
+   ============================================ */
+
+.dp-rec-strip{ display: flex; gap: 16px; overflow-x: auto; padding: 6px 2px 14px; scrollbar-width: none; flex: 1; }
+.dp-rec-strip::-webkit-scrollbar{ display: none; }
+
+.dp-rec-card{ flex-shrink: 0; width: 160px; text-decoration: none; color: var(--text); transition: transform var(--transition); }
+.dp-rec-card:hover{ transform: translateY(-6px); }
+
+.dp-rec-poster-wrap{
+  position: relative; width: 100%; aspect-ratio: 2/3;
+  border-radius: 14px; overflow: hidden;
+  background: linear-gradient(135deg, #2a2a32, #131318);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transition: box-shadow var(--transition);
+}
+.dp-rec-card:hover .dp-rec-poster-wrap{ box-shadow: 0 20px 36px rgba(0,0,0,0.28); }
+.dp-rec-poster-img{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dp-rec-poster-fallback-inner{
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 34px; font-weight: 800; color: rgba(255,255,255,0.25);
+}
+.dp-rec-rating{
+  position: absolute; top: 8px; right: 8px; z-index: 2;
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(8,8,10,0.6); color: #f5c518;
+  padding: 3px 8px; border-radius: 50px; font-size: 10.5px; font-weight: 800;
+  backdrop-filter: blur(6px);
+  opacity: 0; transform: translateY(-4px);
+  transition: opacity .2s cubic-bezier(0.4,0,0.2,1), transform .2s cubic-bezier(0.4,0,0.2,1);
+}
+.dp-rec-card:hover .dp-rec-rating{ opacity: 1; transform: translateY(0); }
+.dp-rec-title{ font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dp-rec-add{
+  width: 100%; margin-top: 6px;
+  height: 30px; border-radius: 50px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff; font-family: inherit; font-size: 11px; font-weight: 700;
+  cursor: pointer;
+  transition: background .2s, border-color .2s;
+}
+.dp-rec-add:hover{ background: rgba(255,255,255,0.18); }
+.dp-rec-add--done{
+  background: rgba(93,187,127,0.2); border-color: rgba(93,187,127,0.5); color: #a6f0bd;
+  cursor: default;
+}
+.dp-rec-poster-link{ text-decoration: none; color: inherit; display: block; }
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media(max-width: 780px){
+  .dp-hero{ aspect-ratio: auto; min-height: 520px; max-height: none; border-radius: 16px; }
+  .dp-hero-content{ flex-direction: column; align-items: flex-start; padding: 24px 22px; gap: 16px; }
+  .dp-hero-side{ text-align: left; max-width: 100%; }
+  .dp-title{ font-size: 28px; }
+  .dp-logo{ max-width: 220px; max-height: 70px; }
+  .dp-plot{ -webkit-line-clamp: 3; }
+  .dp{ padding: 16px 16px 50px; }
+  .dp-progress{ padding: 18px 20px; }
+  .dp-ep-card{ width: 220px; }
+}
+
+@media(max-width: 420px){
+  .dp-title{ font-size: 24px; }
+  .dp-chips{ gap: 6px; }
+  .dp-chip{ font-size: 11px; padding: 4px 10px; }
+  .dp-hero-side{ display: none; }
+}
+
+/* ============================================
+   SKELETON LOADERS — shimmer while images load
+   ============================================ */
+
+@keyframes dpShimmer{
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.dp-skel{
+  position: relative;
+  background: linear-gradient(
+    100deg,
+    rgba(255,255,255,0.04) 8%,
+    rgba(255,255,255,0.1) 18%,
+    rgba(255,255,255,0.04) 33%
+  );
+  background-size: 800px 100%;
+  animation: dpShimmer 1.4s ease-in-out infinite;
+}
+
+/* Any image with data-skel becomes invisible + shimmering until it fires onload */
+img[data-skel]{
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+img[data-skel].dp-loaded{
+  opacity: 1;
+}

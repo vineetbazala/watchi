@@ -1,0 +1,175 @@
+/* ============================================
+   LIGHT MODE — all overrides in one file
+   Change anything light-mode related here
+   ============================================ */
+
+body.light-mode {
+    --bg: #e0e0e8;
+    --surface: rgba(255, 255, 255, 0.4);
+    --border: rgba(255, 255, 255, 0.6);
+    --text: #1d1d1f;
+    --text-muted: #6e6e73;
+    background: linear-gradient(135deg, #b8a8e8 0%, #d4b8e8 30%, #a8c8e8 70%, #b8e0d4 100%);
+}
+
+/* --- NAV --- */
+
+body.light-mode nav {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+body.light-mode nav a:hover {
+    color: #1d1d1f;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+body.light-mode nav a.active {
+    color: #f0f0f0;
+    background: #1d1d1f;
+}
+/* --- PAGE HEADER --- */
+
+body.light-mode .page-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* --- FORMS --- */
+
+body.light-mode select {
+    background: rgba(255, 255, 255, 0.7);
+    color: #1d1d1f;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+body.light-mode select option {
+    background: #ffffff;
+    color: #1d1d1f;
+}
+
+body.light-mode input {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #1d1d1f;
+}
+
+body.light-mode input::placeholder {
+    color: #9e9ea8;
+}
+
+/* --- BUTTONS --- */
+
+body.light-mode button {
+    background: #1d1d1f;
+    color: #f0f0f0;
+}
+
+/* --- VERTICAL MOVIE CARD --- */
+
+body.light-mode .movie-card {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .movie-card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+/* --- HORIZONTAL CARD NUMBER --- */
+
+body.light-mode .card-h-number {
+    color: var(--accent);
+    text-shadow:
+        0 1px 4px rgba(0,0,0,0.4),
+        0 0 10px rgba(0,0,0,0.2);
+}
+
+/* --- CARD ROW HOVER --- */
+
+body.light-mode .card-row:hover .card-flip-wrapper {
+    opacity: 0.55;
+    transform: scale(0.97);
+}
+
+body.light-mode .card-row .card-flip-wrapper:hover {
+    opacity: 1 !important;
+    transform: translateY(-6px) scale(1.02) !important;
+    box-shadow:
+        0 8px 16px rgba(0, 0, 0, 0.08),
+        0 20px 40px rgba(0, 0, 0, 0.12);
+    z-index: 10;
+}
+
+body.light-mode .card-flip-wrapper.flipped {
+    opacity: 1 !important;
+    transform: none !important;
+    z-index: 20;
+}
+
+/* --- CARD BACK --- */
+
+body.light-mode .card-flip-back {
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(200, 169, 110, 0.5);
+}
+
+body.light-mode .flip-back-title {
+    color: #1d1d1f;
+}
+
+body.light-mode .flip-back-genre {
+    color: #6e6e73;
+}
+
+body.light-mode .flip-back-imdb {
+    color: #c8a96e;
+}
+
+body.light-mode .flip-back-close {
+    color: #6e6e73;
+}
+
+body.light-mode .card-flip-back input {
+    background: #f0f0f5;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    color: #1d1d1f;
+}
+
+body.light-mode .card-flip-back input::placeholder {
+    color: #9e9ea8;
+}
+
+/* --- CARD BACK BUTTONS --- */
+
+body.light-mode .flip-btn-edit {
+    background: rgba(200, 169, 110, 0.15);
+    color: #a07840;
+    border: 1px solid rgba(200, 169, 110, 0.3);
+}
+
+body.light-mode .flip-btn-watch {
+    background: rgba(93, 187, 127, 0.1);
+    color: #3a9060;
+    border: 1px solid rgba(93, 187, 127, 0.25);
+}
+
+body.light-mode .flip-btn-unwatch {
+    background: rgba(100, 149, 237, 0.1);
+    color: #4070c0;
+    border: 1px solid rgba(100, 149, 237, 0.25);
+}
+
+body.light-mode .flip-btn-delete {
+    background: rgba(220, 53, 69, 0.08);
+    color: #c0303d;
+    border: 1px solid rgba(220, 53, 69, 0.2);
+}

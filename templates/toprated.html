@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Top Rated — Watchi{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Top Rated</h1>
+    <p>Your highest rated movies and shows.</p>
+</div>
+
+{% if movies %}
+<div class="stats-section-title" style="margin-bottom: 16px;">
+    🎬 Movies
+</div>
+
+{% for movie in movies %}
+<div class="poster-list">
+    <div class="poster-list-card reveal" style="transition: {{ loop.index0 * 0.08}}s;">
+        {% if movie.poster and movie.poster != "N/A" %}
+        <img src="{{ movie.poster }}" class="poster-list-img">
+        {% else %}
+        <div class="poster-list-placeholder">🎬</div>
+        {% endif %}
+        <div class="poster-list-info">
+            <h2>{{ movie.title }}</h2>
+            <p>{{ movie.year }}{% if movie.genre %} · {{ movie.genre }}{% endif %}</p>
+            <p style="margin-top: 6px;">
+                <span class="rating">⭐ {{ movie.rating }}/10</span>
+                {% if movie.imdb_rating %}
+                <span style="margin-left: 8px; font-size: 12px; color: var(--text-muted);">
+                    IMDb {{ movie.imdb_rating }}
+                </span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="toprated-rank">#{{ loop.index }}</div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if shows %}
+<div class="stats-section-title" style="margin: 32px 0 16px;">
+    📺 Shows
+</div>
+
+{% for s in shows %}
+<div class="poster-list">
+    <div class="poster-list-card reveal" style="transition: {{ loop.index0 * 0.08 }}s">
+        {% if s.poster and s.poster != "N/A" %}
+        <img src="{{ s.poster }}" class="poster-list-img">
+        {% else %}
+        <div class="poster-list-placeholder">📺</div>
+        {% endif %}
+        <div class="poster-list-info">
+            <h2>{{ s.title }}</h2>
+            <p>{{ s.year }}{% if s.genre %} · {{ s.genre }}{% endif %}</p>
+            <p style="margin-top: 6px;">
+                <span class="rating">⭐ {{ s.rating }}/10</span>
+                {% if s.imdb_rating %}
+                <span style="margin-left: 8px; font-size: 12px; color: var(--text-muted);">
+                    IMDb {{ s.imdb_rating }}
+                </span>
+                {% endif %}
+            </p>
+            <p style="margin-top: 2px; font-size: 11px; color: var(--text-muted);">
+                {% if s.is_anime() %}⛩ Anime{% else %}📺 TV{% endif %}
+                · {{ s.status|capitalize }}
+            </p>
+        </div>
+        <div class="toprated-rank">#{{ loop.index }}</div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if not movies and not shows %}
+<div class="empty-state">
+    <div class="empty-icon">⭐</div>
+    <h2>No ratings yet</h2>
+    <p>Rate your watched movies and completed shows to see them here.</p>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Edit Rating — CineTrack{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Edit Rating</h1>
+    <p>Update your rating for a watched movie.</p>
+</div>
+
+<form method="POST">
+    <label>Movie Name</label>
+    <input type="text" name="movie_name" placeholder="e.g. Interstellar">
+    <label>New Rating</label>
+    <input type="number" name="rating" min="1" max="10"
+    placeholder="New rating 1-10"
+    required
+    style="margin-bottom: 8px;">
+    <button>Update Rating</button>
+</form>
+{% endblock %}

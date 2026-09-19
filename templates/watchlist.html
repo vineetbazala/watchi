@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Watchlist — Watchi{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Watchlist</h1>
+    <p>{{ movies|length + series|length }} titles waiting for you.</p>
+</div>
+
+{% if movies %}
+<h2 style="margin-bottom: 16px; font-size: 16px; color: var(--text-muted);">
+    🎬 Movies — {{ movies|length }}
+</h2>
+
+<div class="poster-list">
+    {% for movie in movies %}
+    <div class="poster-list-card reveal">
+        {% if movie.poster and movie.poster != "N/A" %}
+        <img src="{{ movie.poster }}" class="poster-list-img" alt="{{ movie.title }}">
+        {% else %}
+        <div class="poster-list-placeholder">🎬</div>
+        {% endif %}
+        <div class="poster-list-info">
+            <h2>{{ movie.title }}</h2>
+            <p>{{ movie.year }}{% if movie.genre %} · {{ movie.genre }}{% endif %}</p>
+            <div style="margin-top: 6px; display: flex; gap: 8px; align-items: center;">
+                <span class="watchlist">Watchlist</span>
+                {% if movie.imdb_rating %}
+                <span style="font-size: 12px; color: var(--accent);">IMDb {{ movie.imdb_rating }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if series %}
+<h2 style="margin: 32px 0 16px; font-size: 16px; color: var(--text-muted);">
+    📺 Shows — {{ series|length }}
+</h2>
+
+<div class="poster-list">
+    {% for s in series %}
+    <div class="poster-list-card reveal">
+        {% if s.poster and s.poster != "N/A" %}
+        <img src="{{ s.poster }}" class="poster-list-img" alt="{{ s.title }}">
+        {% else %}
+        <div class="poster-list-placeholder">📺</div>
+        {% endif %}
+        <div class="poster-list-info">
+            <h2>{{ s.title }}</h2>
+            <p>{{ s.year }}{% if s.genre %} · {{ s.genre }}{% endif %}</p>
+            <div style="margin-top: 6px; display: flex; gap: 8px; align-items: center;">
+                <span class="watchlist">Watchlist</span>
+                {% if s.imdb_rating %}
+                <span style="font-size: 12px; color: var(--accent);">IMDb {{ s.imdb_rating }}</span>
+                {% endif %}
+            </div>
+            {% if s.total_seasons %}
+            <p style="margin-top: 4px; font-size: 12px;">{{ s.total_seasons }} seasons</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if not movies and not series %}
+<div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <h2>Watchlist is empty</h2>
+    <p>Add movies and shows you want to watch.</p>
+    <a href="/add" class="btn-primary" style="margin-top: 20px; display: inline-block;">
+        + Add Something
+    </a>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}Watchi — Home{% endblock %}
+
+{% block content %}
+
+{% if featured %}
+<div class="featured-card reveal">
+
+    {% if featured.poster and featured.poster != "N/A" %}
+    <div class="featured-poster-side">
+        <img src="{{ featured.poster }}" class="featured-poster-img" alt="{{ featured.title }}">
+    </div>
+    {% endif %}
+
+    <div class="featured-info-side">
+        <div class="featured-eyebrow">
+            {% if featured_type == "series" %}
+                📺 Now Featuring
+            {% else %}
+                🎬 Now Featuring
+            {% endif %}
+        </div>
+
+        <h2 class="featured-title">{{ featured.title }}</h2>
+
+        {% if featured.year or featured.genre %}
+        <div class="featured-details">
+            {% if featured.year %}<span class="featured-year">{{ featured.year }}</span>{% endif %}
+            {% if featured.genre %}<span class="featured-genre">{{ featured.genre }}</span>{% endif %}
+        </div>
+        {% endif %}
+
+        {% if featured_type == "movie" and featured.director %}
+        <div class="featured-director">Dir. {{ featured.director }}</div>
+        {% endif %}
+
+        <div class="featured-meta">
+            {% if featured_type == "movie" %}
+                {% if featured.is_watched() %}
+                    <span class="watched">Watched</span>
+                    <span class="featured-rating">⭐ {{ featured.rating }} / 10</span>
+                {% else %}
+                    <span class="watchlist">Watchlist</span>
+                {% endif %}
+
+            {% else %}
+                {% if featured.is_watching() %}
+                    <span class="badge-watching">Watching</span>
+                {% elif featured.is_completed() %}
+                    <span class="watched">Completed</span>
+                {% elif featured.is_paused() %}
+                    <span class="badge-paused">Paused</span>
+                {% else %}
+                    <span class="watchlist">Watchlist</span>
+                {% endif %}
+
+                {% if featured.rating and featured.rating != 0 %}
+                    <span class="featured-rating">⭐ {{ featured.rating }} / 10</span>
+                {% endif %}
+            {% endif %}
+
+            {% if featured.imdb_rating and featured.imdb_rating != "N/A" %}
+                <span class="featured-imdb">IMDb {{ featured.imdb_rating }}</span>
+            {% endif %}
+        </div>
+
+        {% if featured_type == "series" and not featured.is_watchlist() %}
+            {% if featured.is_anime() and featured.total_episodes > 0 %}
+            {% set prog = featured.progress_percent() %}
+            <div class="featured-series-progress">
+                <div class="featured-progress-bar">
+                    <div class="featured-progress-fill" style="width: {{ prog }}%;"></div>
+                </div>
+                <span class="featured-progress-text">
+                    {{ featured.episodes_watched }} of {{ featured.total_episodes }} eps · {{ prog }}%
+                </span>
+            </div>
+            {% elif featured.is_tv() %}
+            {% if featured.total_seasons and featured.total_seasons > 0 %}
+            <div class="featured-series-progress">
+                <div class="featured-progress-bar">
+                    <div class="featured-progress-fill"
+                        style="width: {{ featured.progress_percent() }}%;">
+                    </div>
+                </div>
+                <span class="featured-progress-text">
+                    S{{ featured.current_season }} E{{ featured.current_episode }}
+                    · {{ featured.current_season }} of {{ featured.total_seasons }} seasons
+                </span>
+            </div>
+            {% endif %}
+            {% endif %}
+        {% endif %}
+
+        <div class="featured-refresh">↻ Refresh for another</div>
+    </div>
+
+</div>
+{% endif %}
+
+<div class="hero reveal">
+    <div class="hero-eyebrow">🎬 YOUR COLLECTION UNIVERSE</div>
+    <h1 class="hero-title">Watchi</h1>
+    <p class="hero-subtitle">Track what you've seen.<br>Plan what's next.</p>
+
+    <div class="hero-stats">
+        <div class="stat-card">
+            <span class="stat-number">{{ total }}</span>
+            <span class="stat-label">Total</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">{{ watched }}</span>
+            <span class="stat-label">Watched</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">{{ watchlist }}</span>
+            <span class="stat-label">Watchlist</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-number">{{ avg }}</span>
+            <span class="stat-label">Avg Rating</span>
+        </div>
+    </div>
+
+    <div class="hero-actions">
+        <a href="/movies" class="btn-primary">Browse Movies →</a>
+        <a href="/add" class="btn-secondary">+ Add Movie/Series</a>
+    </div>
+</div>
+
+{% endblock %}

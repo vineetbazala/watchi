@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Delete Movie — CineTrack{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Delete Movie</h1>
+    <p>Permanently remove a movie from your collection.</p>
+</div>
+
+<form method="POST">
+    <label>Movie Name</label>
+    <input type="text" name="movie_name" placeholder="e.g. Fight Club">
+    <button style="background: #c0392b;">Delete Movie</button>
+</form>
+{% endblock %}

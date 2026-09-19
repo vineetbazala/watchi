@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Movies — Watchi{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>All Movies</h1>
+    <p>{{ movies|length }} movies in your collection.</p>
+    
+</div>
+<div class="sort-box">
+    <label for="sort">Sort:</label>
+    <select id="sort" onchange="window.location.href=this.value">
+        <option value="/movies?sort=recent" {{ "selected" if current_sort == "recent" }}>Recently Added</option>
+        <option value="/movies?sort=first_added" {{ "selected" if current_sort == "first_added" }}>First Added</option>
+        <option value="/movies?sort=title_asc" {{ "selected" if current_sort == "title_asc" }}>Title A → Z</option>
+        <option value="/movies?sort=title_desc" {{ "selected" if current_sort == "title_desc" }}>Title Z → A</option>
+        <option value="/movies?sort=favorites" {{ "selected" if current_sort == "favorites" }}>Favorites</option>
+    </select>
+</div>
+{% if movies %}
+<div class="card-row-wrapper">
+    <button class="scroll-btn scroll-left"
+        onmousedown="startScroll(-1)"
+        onmouseup="stopScroll()"
+        onmouseleave="stopScroll()">‹</button>
+    <div class="card-row" id="cardRow">
+        {% for movie in movies %}
+        <div class="card-flip-wrapper" id="card-{{ loop.index }}">
+            <div class="card-flip-inner">
+
+                <!-- FRONT -->
+                <div class="card-flip-front movie-card-h"
+                     onclick="document.getElementById('card-{{ loop.index }}').classList.add('flipped')">
+                     
+                    <a href="{{ url_for('moviedetail', title=movie.title) }}"
+                    class="card-detail-link"
+                    onclick="event.stopPropagation()"
+                    title="View details">↗</a>
+                    
+                    {% if movie.poster and movie.poster != "N/A" %}
+                    <img src="{{ movie.poster }}" class="card-poster" alt="{{ movie.title }}">
+                    {% else %}
+                    <div class="card-no-poster">🎬</div>
+                    {% endif %}
+
+                    <div class="card-overlay">
+                        <div class="card-h-number">{{ loop.index }}</div>
+                        <div class="card-h-title">{{ movie.title }}</div>
+                        {% if movie.year %}
+                        <div class="card-h-year">{{ movie.year }}</div>
+                        {% endif %}
+                        <div class="card-h-bottom">
+                            {% if movie.is_watched() %}
+                                <span class="watched">Watched</span>
+                                <span class="card-h-rating">⭐ {{ movie.rating }}</span>
+                            {% else %}
+                                <span class="watchlist">Watchlist</span>
+                            {% endif %}
+                            <button type="button" class="fav-btn {{ 'is-fav' if movie.is_favorite }}"
+                                onclick="toggleFavorite(event, this, '/togglefavorite', 'movie_name', '{{ movie.title }}')"
+                                aria-label="Toggle favorite">
+                                <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.8-10-9.5C.3 7.7 2.4 4 6 4c2.1 0 3.6 1.1 4.5 2.5C11.4 5.1 12.9 4 15 4c3.6 0 5.7 3.7 4 7.5C19.5 16.2 12 21 12 21z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- BACK — completely isolated from front click -->
+                <div class="card-flip-back">
+
+                    <div class="flip-back-close"
+                         onclick="document.getElementById('card-{{ loop.index }}').classList.remove('flipped')">
+                        ✕
+                    </div>
+
+                    <p class="flip-back-title">{{ movie.title }}</p>
+
+                    {% if movie.genre %}
+                    <p class="flip-back-genre">{{ movie.genre }}</p>
+                    {% endif %}
+
+                    {% if movie.imdb_rating %}
+                    <p class="flip-back-imdb">IMDb ⭐ {{ movie.imdb_rating }}</p>
+                    {% endif %}
+
+                    {% if movie.is_watched() %}
+
+                    <form method="POST" action="/editrating">
+                        <input type="hidden" name="movie_name" value="{{ movie.title }}">
+                        <input type="number" name="rating" min="1" max="10"
+                            placeholder="New rating 1-10" required>
+                        <button type="submit" class="flip-btn flip-btn-edit">✏ Update Rating</button>
+                    </form>
+
+                    <form method="POST" action="/unwatch">
+                        <input type="hidden" name="movie_name" value="{{ movie.title }}">
+                        <button type="submit" class="flip-btn flip-btn-unwatch">↩ Watchlist</button>
+                    </form>
+
+                    {% else %}
+
+                    <form method="POST" action="/markwatched">
+                        <input type="hidden" name="movie_name" value="{{ movie.title }}">
+                        <input type="number" name="rating" min="1" max="10"
+                            placeholder="Rating 1-10" required>
+                        <button type="submit" class="flip-btn flip-btn-watch">✓ Mark Watched</button>
+                    </form>
+
+                    {% endif %}
+
+                    <form method="POST" action="/deletemovie">
+                        <input type="hidden" name="movie_name" value="{{ movie.title }}">
+                        <button type="submit" class="flip-btn flip-btn-delete">🗑 Delete</button>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <button class="scroll-btn scroll-right"
+        onmousedown="startScroll(1)"
+        onmouseup="stopScroll()"
+        onmouseleave="stopScroll()">›</button>
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">🎬</div>
+    <h2>No movies yet</h2>
+    <p>Start tracking your favourite movies.</p>
+    <a href="/add" class="btn-primary"
+       style="margin-top: 20px; display: inline-block;">
+        + Add Movie
+    </a>
+</div>
+{% endif %}
+<script>
+let scrollInterval = null;
+
+function startScroll(direction) {
+    const row = document.getElementById("cardRow");
+    row.scrollBy({ left: direction * 220, behavior: "smooth" });
+    scrollInterval = setTimeout(() => {
+        scrollInterval = setInterval(() => {
+            row.scrollBy({ left: direction * 180, behavior: "smooth" });
+        }, 150);
+    }, 400);
+}
+
+function stopScroll() {
+    clearTimeout(scrollInterval);
+    clearInterval(scrollInterval);
+    scrollInterval = null;
+}
+</script>
+
+{% endblock %}

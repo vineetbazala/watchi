@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% block title %}Add — Watchi{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Add to Watchi</h1>
+    <p>What do you want to add today?</p>
+</div>
+
+<div class="add-toggle">
+    <button class="add-toggle-btn active" id="btn-movie"
+            onclick="switchTab('movie')">
+        🎬 Movie
+    </button>
+    <button class="add-toggle-btn" id="btn-series"
+            onclick="switchTab('series')">
+        📺 Shows
+    </button>
+</div>
+
+<!-- MOVIE FORM -->
+<div id="movie-form">
+    <form method="POST" action="/addmovie">
+
+        <label>Movie Name</label>
+        <div class="input-wrap">
+            <input type="text" name="movie_name"
+                placeholder="e.g. Interstellar"
+                autocomplete="off"
+                id="movie-input"
+                required>
+            <div id="movie-suggestions" class="suggestions-box"></div>
+        </div>
+        <label>Status</label>
+        <select name="status" id="movie-status">
+            <option value="watched">Watched</option>
+            <option value="watchlist">Watchlist</option>
+        </select>
+
+        <div id="movie-rating-box">
+            <label>Rating</label>
+            <input type="number" name="rating"
+                placeholder="1 – 10" min="1" max="10">
+        </div>
+
+        <button type="submit">Add Movie</button>
+    </form>
+</div>
+
+<!-- SERIES FORM -->
+<div id="series-form" style="display: none;">
+    <form method="POST" action="/addseries">
+
+        <label>Show Name</label>
+        <div class="input-wrap">
+            <input type="text" name="title"
+                placeholder="e.g. Breaking Bad, Naruto"
+                autocomplete="off"
+                id="series-input"
+                required>
+            <div id="series-suggestions" class="suggestions-box"></div>
+        </div>
+        <label>Type</label>
+        <select name="show_type" id="show-type">
+            <option value="tv">📺 TV Show</option>
+            <option value="anime">⛩ Anime</option>
+        </select>
+
+        <label>Status</label>
+        <select name="status" id="series-status">
+            <option value="watchlist">Watchlist</option>
+            <option value="watching">Watching</option>
+            <option value="paused">Paused</option>
+            <option value="completed">Completed</option>
+        </select>
+
+        <!-- TV fields -->
+        <div id="tv-fields" style="display: none;">
+            <label>Current Season</label>
+            <input type="number" name="current_season"
+                placeholder="e.g. 2" min="1" value="1">
+            <label>Current Episode</label>
+            <input type="number" name="current_episode"
+                placeholder="e.g. 5" min="0" value="0">
+        </div>
+
+        <!-- Anime fields -->
+        <div id="anime-fields" style="display: none;">
+            <label>Episodes Watched</label>
+            <input type="number" name="episodes_watched"
+                placeholder="e.g. 150" min="0" value="0">
+            <label>Total Episodes</label>
+            <input type="number" name="total_episodes"
+                placeholder="e.g. 220" min="0" value="0">
+        </div>
+
+        <!-- Rating — shown for watching/paused/completed -->
+        <div id="series-rating-box" style="display: none;">
+            <label>Your Rating</label>
+            <input type="number" name="rating"
+                placeholder="1 – 10" min="1" max="10">
+        </div>
+
+        <button type="submit" id="series-submit-btn">Add Show</button>
+    </form>
+    
+</div>
+<script>
+// ── Tab switching ──────────────────────────
+function switchTab(tab) {
+    const movieForm = document.getElementById("movie-form");
+    const seriesForm = document.getElementById("series-form");
+    const btnMovie = document.getElementById("btn-movie");
+    const btnSeries = document.getElementById("btn-series");
+
+    if (tab === "movie") {
+        movieForm.style.display = "block";
+        seriesForm.style.display = "none";
+        btnMovie.classList.add("active");
+        btnSeries.classList.remove("active");
+    } else {
+        movieForm.style.display = "none";
+        seriesForm.style.display = "block";
+        btnMovie.classList.remove("active");
+        btnSeries.classList.add("active");
+    }
+}
+
+// ── Movie rating toggle ────────────────────
+const movieStatus = document.getElementById("movie-status");
+const movieRatingBox = document.getElementById("movie-rating-box");
+
+function toggleMovieRating() {
+    movieRatingBox.style.display =
+        movieStatus.value === "watched" ? "block" : "none";
+}
+movieStatus.addEventListener("change", toggleMovieRating);
+toggleMovieRating();
+
+// ── Show type toggle (TV vs Anime) ─────────
+const showType = document.getElementById("show-type");
+const tvFields = document.getElementById("tv-fields");
+const animeFields = document.getElementById("anime-fields");
+const seriesStatus = document.getElementById("series-status");
+const seriesRatingBox = document.getElementById("series-rating-box");
+
+function toggleShowType() {
+    const isAnime = showType.value === "anime";
+    const status = seriesStatus.value;
+
+    if (status === "watchlist" || status === "completed") return;
+
+    if (isAnime) {
+        tvFields.style.display = "none";
+        animeFields.style.display = "block";
+    } else {
+        tvFields.style.display = "block";
+        animeFields.style.display = "none";
+    }
+}
+
+function toggleSeriesFields() {
+    const status = seriesStatus.value;
+    const isAnime = showType.value === "anime";
+
+    // Rating visible for anything except watchlist
+    seriesRatingBox.style.display =
+        status === "watchlist" ? "none" : "block";
+
+    if (status === "watchlist") {
+        tvFields.style.display = "none";
+        animeFields.style.display = "none";
+    } else if (status === "completed") {
+        // For completed anime — show total episodes only
+        // For completed TV — hide fields, backend handles
+        tvFields.style.display = "none";
+        if (isAnime) {
+            animeFields.style.display = "block";
+        } else {
+            animeFields.style.display = "none";
+        }
+    } else {
+        // Watching or Paused
+        if (isAnime) {
+            tvFields.style.display = "none";
+            animeFields.style.display = "block";
+        } else {
+            tvFields.style.display = "block";
+            animeFields.style.display = "none";
+        }
+    }
+}
+
+showType.addEventListener("change", toggleShowType);
+seriesStatus.addEventListener("change", toggleSeriesFields);
+toggleSeriesFields();
+
+// ── Movie search suggestions ───────────────
+const movieInput = document.getElementById("movie-input");
+const movieSuggestions = document.getElementById("movie-suggestions");
+let movieTimeout = null;
+
+movieInput.addEventListener("input", function() {
+    clearTimeout(movieTimeout);
+    const query = this.value.trim();
+
+    if (query.length < 1) {
+        movieSuggestions.innerHTML = "";
+        movieSuggestions.style.display = "none";
+        return;
+    }
+
+    movieTimeout = setTimeout(() => {
+        fetch(`/suggest_external?q=${encodeURIComponent(query)}&type=movie`)
+            .then(r => r.json())
+            .then(data => {
+                movieSuggestions.innerHTML = "";
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = "suggestion-item";
+                        div.innerHTML = `
+                            <span>🎬 ${item.title}</span>
+                            <span style="font-size:11px; color:var(--text-muted);">
+                                ${item.year || ''}
+                            </span>
+                        `;
+                        div.style.display = "flex";
+                        div.style.justifyContent = "space-between";
+                        div.style.alignItems = "center";
+                        div.style.gap = "12px";
+                        div.onclick = () => {
+                            movieInput.value = item.title;
+                            movieSuggestions.style.display = "none";
+                        };
+                        movieSuggestions.appendChild(div);
+                    });
+                    movieSuggestions.style.display = "block";
+                } else {
+                    movieSuggestions.style.display = "none";
+                }
+            });
+    }, 200);
+});
+
+
+// ── Series search suggestions ──────────────
+const seriesInput = document.getElementById("series-input");
+const seriesSuggestions = document.getElementById("series-suggestions");
+let seriesTimeout = null;
+
+seriesInput.addEventListener("input", function() {
+    clearTimeout(seriesTimeout);
+    const query = this.value.trim();
+
+    if (query.length < 1) {
+        seriesSuggestions.innerHTML = "";
+        seriesSuggestions.style.display = "none";
+        return;
+    }
+
+    seriesTimeout = setTimeout(() => {
+        fetch(`/suggest_external?q=${encodeURIComponent(query)}&type=series`)
+            .then(r => r.json())
+            .then(data => {
+                seriesSuggestions.innerHTML = "";
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = "suggestion-item";
+                        div.innerHTML = `
+                            <span>📺 ${item.title}</span>
+                            <span style="font-size:11px; color:var(--text-muted);">
+                                ${item.year || ''}
+                            </span>
+                        `;
+                        div.style.display = "flex";
+                        div.style.justifyContent = "space-between";
+                        div.style.alignItems = "center";
+                        div.style.gap = "12px";
+                        div.onclick = () => {
+                            seriesInput.value = item.title;
+                            seriesSuggestions.style.display = "none";
+                        };
+                        seriesSuggestions.appendChild(div);
+                    });
+                    seriesSuggestions.style.display = "block";
+                } else {
+                    seriesSuggestions.style.display = "none";
+                }
+            });
+    }, 200);
+});
+
+// ── Close suggestions on outside click ────
+document.addEventListener("click", (e) => {
+    if (!movieInput.contains(e.target) &&
+        !movieSuggestions.contains(e.target)) {
+        movieSuggestions.style.display = "none";
+    }
+    if (!seriesInput.contains(e.target) &&
+        !seriesSuggestions.contains(e.target)) {
+        seriesSuggestions.style.display = "none";
+    }
+});
+</script>
+
+{% endblock %}

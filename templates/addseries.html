@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Add Show — Watchi{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Add Show</h1>
+    <p>Add a new show to track your progress.</p>
+</div>
+
+<form method="POST" autocomplete="off">
+
+    <label>Show Name</label>
+    <div style="position: relative;">
+        <input type="text" name="title"
+            id="show-name-input"
+            placeholder="e.g. Dexter"
+            autocomplete="off"
+            required>
+        <div id="show-suggestions" class="suggestions-box"></div>
+    </div>
+
+    <label>Status</label>
+    <select name="status" id="status">
+        <option value="watchlist">Watchlist</option>
+        <option value="watching">Watching</option>
+        <option value="paused">Paused</option>
+        <option value="completed">Completed</option>
+    </select>
+
+    <div id="progress-fields">
+        <label>Current Season</label>
+        <input type="number" name="current_season"
+            placeholder="e.g. 2" min="1" value="1">
+
+        <label>Current Episode</label>
+        <input type="number" name="current_episode"
+            placeholder="e.g. 6" min="0" value="0">
+    </div>
+
+    <button type="submit">Add Show</button>
+
+</form>
+
+<script>
+const status = document.getElementById("status");
+const progressFields = document.getElementById("progress-fields");
+
+function toggleFields() {
+    if (status.value === "watchlist") {
+        progressFields.style.display = "none";
+    } else {
+        progressFields.style.display = "block";
+    }
+}
+
+status.addEventListener("change", toggleFields);
+toggleFields();
+
+const showInput = document.getElementById("show-name-input");
+const showSuggestions = document.getElementById("show-suggestions");
+let showTimeout = null;
+
+showInput.addEventListener("input", function() {
+    clearTimeout(showTimeout);
+    const query = this.value.trim();
+
+    if (query.length < 1) {
+        showSuggestions.innerHTML = "";
+        showSuggestions.style.display = "none";
+        return;
+    }
+
+    showTimeout = setTimeout(() => {
+        fetch(`/suggest?q=${encodeURIComponent(query)}`)
+            .then(r => r.json())
+            .then(data => {
+                showSuggestions.innerHTML = "";
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = "suggestion-item";
+
+                        const icon = item.type === "movie" ? "🎬" :
+                                     item.type === "anime" ? "⛩" : "📺";
+
+                        div.innerHTML = `
+                            <span>${icon} ${item.title}</span>
+                            <span style="font-size:11px; color:var(--text-muted);">
+                                ${item.year || ''}
+                            </span>
+                        `;
+                        div.style.display = "flex";
+                        div.style.justifyContent = "space-between";
+                        div.style.alignItems = "center";
+                        div.style.gap = "12px";
+
+                        div.onclick = () => {
+                            showInput.value = item.title;
+                            showSuggestions.style.display = "none";
+                        };
+                        showSuggestions.appendChild(div);
+                    });
+                    showSuggestions.style.display = "block";
+                } else {
+                    showSuggestions.style.display = "none";
+                }
+            });
+    }, 200);
+});
+
+document.addEventListener("click", (e) => {
+    if (!showInput.contains(e.target) &&
+        !showSuggestions.contains(e.target)) {
+        showSuggestions.style.display = "none";
+    }
+});
+</script>
+
+{% endblock %}

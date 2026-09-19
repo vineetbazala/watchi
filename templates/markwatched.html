@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Mark Watched — CineTrack{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Mark as Watched</h1>
+    <p>Move a movie from watchlist to watched.</p>
+</div>
+
+<form method="POST">
+    <label>Movie Name</label>
+    <input type="text" name="movie_name" placeholder="e.g. Inception">
+    <label>Your Rating</label>
+    <input type="number" name="rating" placeholder="1 – 10" min="1" max="10">
+    <button>Mark as Watched</button>
+</form>
+{% endblock %}

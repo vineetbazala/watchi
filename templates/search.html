@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block title %}Search — Watchi{% endblock %}
+
+{% block content %}
+<div class="page-header reveal">
+    <h1>Search</h1>
+    <p>Find any movie or show in your collection.</p>
+</div>
+
+<form method="POST" autocomplete="off">
+    <label>Title</label>
+    <div style="position: relative;">
+        <input type="text" name="search_name"
+            id="search-input"
+            placeholder="e.g. Fight Club, Naruto..."
+            autocomplete="off"
+            required>
+        <div id="search-suggestions" class="suggestions-box"></div>
+    </div>
+    <button type="submit">Search</button>
+</form>
+
+{% if results %}
+<div style="margin-top: 40px;">
+
+    {% if results.movie %}
+    <div class="search-result-section reveal">
+        <h2 style="margin-bottom: 16px; font-size: 16px; color: var(--text-muted);">
+            🎬 Movie
+        </h2>
+        <div class="poster-list-card">
+            {% if results.movie.poster and results.movie.poster != "N/A" %}
+            <img src="{{ results.movie.poster }}" class="poster-list-img">
+            {% else %}
+            <div class="poster-list-placeholder">🎬</div>
+            {% endif %}
+            <div class="poster-list-info">
+                <h2>{{ results.movie.title }}</h2>
+                <p>
+                    {% if results.movie.year %}{{ results.movie.year }}{% endif %}
+                    {% if results.movie.genre %} · {{ results.movie.genre }}{% endif %}
+                </p>
+                <p style="margin-top: 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    {% if results.movie.is_watched() %}
+                        <span class="watched">Watched</span>
+                        <span class="rating">⭐ {{ results.movie.rating }}/10</span>
+                    {% else %}
+                        <span class="watchlist">Watchlist</span>
+                    {% endif %}
+                    {% if results.movie.imdb_rating %}
+                    <span style="font-size: 12px; color: var(--accent);">
+                        IMDb {{ results.movie.imdb_rating }}
+                    </span>
+                    {% endif %}
+                    <button type="button" class="search-edit-toggle"
+                        onclick="toggleSearchEdit(event, 'movie-edit-panel')"
+                        aria-label="Edit">✎</button>
+                    <button form="movie-edit-form" type="submit" class="search-update-btn">
+                        Update
+                    </button>
+                </p>
+                {% if results.movie.director %}
+                <p style="margin-top: 4px; font-size: 12px;">
+                    Dir. {{ results.movie.director }}
+                </p>
+                {% endif %}
+
+                <div id="movie-edit-panel" class="search-edit-panel" onclick="event.stopPropagation()">
+                    {% if results.movie.is_watched() %}
+                        <form id="movie-edit-form" method="POST" action="/editrating">
+                            <input type="hidden" name="movie_name" value="{{ results.movie.title }}">
+                            <div class="stepper">
+                                <button type="button" onclick="stepValue('movie-rating-input', -1, 1, 10)">−</button>
+                                <input type="number" id="movie-rating-input" name="rating" min="1" max="10"
+                                    value="{{ results.movie.rating if results.movie.rating is number else 5 }}" required>
+                                <button type="button" onclick="stepValue('movie-rating-input', 1, 1, 10)">+</button>
+                            </div>
+                        </form>
+                        <form method="POST" action="/unwatch">
+                            <input type="hidden" name="movie_name" value="{{ results.movie.title }}">
+                            <button type="submit" class="flip-btn flip-btn-unwatch">↩ Move to Watchlist</button>
+                        </form>
+                    {% else %}
+                        <form id="movie-edit-form" method="POST" action="/markwatched">
+                            <input type="hidden" name="movie_name" value="{{ results.movie.title }}">
+                            <div class="stepper">
+                                <button type="button" onclick="stepValue('movie-rating-input', -1, 1, 10)">−</button>
+                                <input type="number" id="movie-rating-input" name="rating" min="1" max="10" value="5" required>
+                                <button type="button" onclick="stepValue('movie-rating-input', 1, 1, 10)">+</button>
+                            </div>
+                        </form>
+                    {% endif %}
+                    <form method="POST" action="/deletemovie">
+                        <input type="hidden" name="movie_name" value="{{ results.movie.title }}">
+                        <button type="submit" class="flip-btn flip-btn-delete">🗑 Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if results.series %}
+    <div class="search-result-section reveal" style="margin-top: 24px;">
+        <h2 style="margin-bottom: 16px; font-size: 16px; color: var(--text-muted);">
+            {% if results.series.is_anime() %}⛩ Anime{% else %}📺 Show{% endif %}
+        </h2>
+        <div class="poster-list-card">
+            {% if results.series.poster and results.series.poster != "N/A" %}
+            <img src="{{ results.series.poster }}" class="poster-list-img">
+            {% else %}
+            <div class="poster-list-placeholder">📺</div>
+            {% endif %}
+            <div class="poster-list-info">
+                <h2>{{ results.series.title }}</h2>
+                <p>
+                    {% if results.series.year %}{{ results.series.year }}{% endif %}
+                    {% if results.series.genre %} · {{ results.series.genre }}{% endif %}
+                </p>
+                <p style="margin-top: 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                    {% if results.series.is_watching() %}
+                        <span class="badge-watching">Watching</span>
+                    {% elif results.series.is_completed() %}
+                        <span class="watched">Completed</span>
+                    {% elif results.series.is_paused() %}
+                        <span class="badge-paused">Paused</span>
+                    {% else %}
+                        <span class="watchlist">Watchlist</span>
+                    {% endif %}
+                    {% if results.series.rating and results.series.rating != 0 %}
+                    <span class="rating">⭐ {{ results.series.rating }}/10</span>
+                    {% endif %}
+                    {% if results.series.imdb_rating %}
+                    <span style="font-size: 12px; color: var(--accent);">
+                        IMDb {{ results.series.imdb_rating }}
+                    </span>
+                    {% endif %}
+                    <button type="button" class="search-edit-toggle"
+                        onclick="toggleSearchEdit(event, 'series-edit-panel')"
+                        aria-label="Edit">✎</button>
+                    <button form="series-edit-form" type="submit" class="search-update-btn">
+                        Update
+                    </button>
+                </p>
+
+                {% if not results.series.is_watchlist() %}
+                {% if results.series.is_anime() and results.series.total_episodes > 0 %}
+                {% set prog = results.series.progress_percent() %}
+                <div style="margin-top: 8px;">
+                    <div class="series-progress-bar">
+                        <div class="series-progress-fill" style="width: {{ prog }}%;"></div>
+                    </div>
+                    <p style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">
+                        {{ results.series.episodes_watched }}
+                        of {{ results.series.total_episodes }} eps · {{ prog }}%
+                    </p>
+                </div>
+                {% elif results.series.is_tv() %}
+                {% if results.series.total_seasons and results.series.total_seasons > 0 %}
+                <div style="margin-top: 8px;">
+                    <div class="series-progress-bar">
+                        <div class="series-progress-fill"
+                            style="width: {{ results.series.progress_percent() }}%;">
+                        </div>
+                    </div>
+                    <p style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">
+                        S{{ results.series.current_season }} E{{ results.series.current_episode }}
+                        · {{ results.series.current_season }} of {{ results.series.total_seasons }} seasons
+                    </p>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% endif %}
+
+                <div id="series-edit-panel" class="search-edit-panel" onclick="event.stopPropagation()">
+                    <form id="series-edit-form" method="POST" action="/updateseries">
+                        <input type="hidden" name="title" value="{{ results.series.title }}">
+                        <input type="hidden" name="show_type" value="{{ results.series.show_type }}">
+
+                        <select name="status">
+                            <option value="watchlist" {{ 'selected' if results.series.is_watchlist() }}>Watchlist</option>
+                            <option value="watching" {{ 'selected' if results.series.is_watching() }}>Watching</option>
+                            <option value="paused" {{ 'selected' if results.series.is_paused() }}>Paused</option>
+                            <option value="completed" {{ 'selected' if results.series.is_completed() }}>Completed</option>
+                        </select>
+
+                        {% if results.series.is_anime() %}
+                        <div class="stepper">
+                            <button type="button" onclick="stepValue('series-watched-input', -1, 0, 99999)">−</button>
+                            <input type="number" id="series-watched-input" name="episodes_watched"
+                                value="{{ results.series.episodes_watched }}" min="0">
+                            <button type="button" onclick="stepValue('series-watched-input', 1, 0, 99999)">+</button>
+                        </div>
+                        <div class="stepper">
+                            <button type="button" onclick="stepValue('series-total-input', -1, 0, 99999)">−</button>
+                            <input type="number" id="series-total-input" name="total_episodes"
+                                value="{{ results.series.total_episodes }}" min="0">
+                            <button type="button" onclick="stepValue('series-total-input', 1, 0, 99999)">+</button>
+                        </div>
+                        {% else %}
+                        <div class="stepper">
+                            <button type="button" onclick="stepValue('series-season-input', -1, 1, 999)">−</button>
+                            <input type="number" id="series-season-input" name="current_season"
+                                value="{{ results.series.current_season }}" min="1">
+                            <button type="button" onclick="stepValue('series-season-input', 1, 1, 999)">+</button>
+                        </div>
+                        <div class="stepper">
+                            <button type="button" onclick="stepValue('series-episode-input', -1, 0, 999)">−</button>
+                            <input type="number" id="series-episode-input" name="current_episode"
+                                value="{{ results.series.current_episode }}" min="0">
+                            <button type="button" onclick="stepValue('series-episode-input', 1, 0, 999)">+</button>
+                        </div>
+                        {% endif %}
+
+                        <div class="stepper">
+                            <button type="button" onclick="stepValue('series-rating-input', -1, 1, 10)">−</button>
+                            <input type="number" id="series-rating-input" name="rating"
+                                value="{{ results.series.rating if results.series.rating else 5 }}" min="1" max="10">
+                            <button type="button" onclick="stepValue('series-rating-input', 1, 1, 10)">+</button>
+                        </div>
+                    </form>
+                    <form method="POST" action="/deleteseries">
+                        <input type="hidden" name="title" value="{{ results.series.title }}">
+                        <button type="submit" class="flip-btn flip-btn-delete">🗑 Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endif %}
+
+{% if searched and not results.movie and not results.series %}
+<div class="empty-state reveal" style="padding: 40px 0;">
+    <div class="empty-icon">🔍</div>
+    <h2>Nothing found</h2>
+    <p>No movie or show matching that title in your collection.</p>
+</div>
+{% endif %}
+
+<script>
+function toggleSearchEdit(event, panelId) {
+    event.stopPropagation();
+    document.querySelectorAll('.search-edit-panel.open').forEach(p => {
+        if (p.id !== panelId) p.classList.remove('open');
+    });
+    document.getElementById(panelId).classList.toggle('open');
+}
+
+function stepValue(inputId, delta, min, max) {
+    const input = document.getElementById(inputId);
+    let val = parseInt(input.value || 0) + delta;
+    if (val < min) val = min;
+    if (val > max) val = max;
+    input.value = val;
+}
+
+const searchInput = document.getElementById("search-input");
+const searchSuggestions = document.getElementById("search-suggestions");
+let searchTimeout = null;
+
+searchInput.addEventListener("input", function() {
+    clearTimeout(searchTimeout);
+    const query = this.value.trim();
+
+    if (query.length < 1) {
+        searchSuggestions.innerHTML = "";
+        searchSuggestions.style.display = "none";
+        return;
+    }
+
+    searchTimeout = setTimeout(() => {
+        fetch(`/suggest?q=${encodeURIComponent(query)}`)
+            .then(r => r.json())
+            .then(data => {
+                searchSuggestions.innerHTML = "";
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const div = document.createElement("div");
+                        div.className = "suggestion-item";
+
+                        const icon = item.type === "movie" ? "🎬" :
+                                     item.type === "anime" ? "⛩" : "📺";
+
+                        const status = item.status.charAt(0).toUpperCase()
+                                     + item.status.slice(1);
+
+                        div.innerHTML = `
+                            <span>${icon} ${item.title}</span>
+                            <span style="font-size:11px; color:var(--text-muted);">
+                                ${item.year || ''} · ${status}
+                            </span>
+                        `;
+                        div.style.display = "flex";
+                        div.style.justifyContent = "space-between";
+                        div.style.alignItems = "center";
+
+                        div.onclick = () => {
+                            searchInput.value = item.title;
+                            searchSuggestions.style.display = "none";
+                        };
+                        searchSuggestions.appendChild(div);
+                    });
+                    searchSuggestions.style.display = "block";
+                } else {
+                    searchSuggestions.style.display = "none";
+                }
+            });
+    }, 200);
+});
+
+document.addEventListener("click", (e) => {
+    if (!searchInput.contains(e.target) &&
+        !searchSuggestions.contains(e.target)) {
+        searchSuggestions.style.display = "none";
+    }
+    document.querySelectorAll('.search-edit-panel.open').forEach(p => {
+        if (!p.contains(e.target) && !e.target.classList.contains('search-edit-toggle')) {
+            p.classList.remove('open');
+        }
+    });
+});
+</script>
+
+{% endblock %}

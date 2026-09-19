@@ -1,0 +1,471 @@
+{% extends "base.html" %}
+{% block title %}{{ item.title }} — Watchi{% endblock %}
+{% block content %}
+{% set placeholder_img = url_for('static', filename='img/poster-placeholder.jpg') %}
+{% set hero_bg = backdrop or placeholder_img %}
+
+<div class="dp">
+
+  <!-- ============ HERO ============ -->
+  <div class="dp-hero">
+    <div class="dp-hero-bg dp-skel" id="dpHeroBg" data-bg="{{ hero_bg }}"></div>
+    <div class="dp-hero-scrim"></div>
+
+    <div class="dp-hero-content">
+
+      <!-- MAIN (bottom-left): eyebrow, title, status line, chips, plot, actions -->
+      <div class="dp-hero-main">
+        <div class="dp-eyebrow">
+          {% if item_type == "movie" %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg>
+            MOVIE
+          {% else %}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="15" height="10" rx="2"/><path d="M17 10l5-3v10l-5-3"/></svg>
+            {{ "ANIME" if item.is_anime() else "TV SERIES" }}
+          {% endif %}
+          {% if item.genre %}<span class="dp-eyebrow-genre">· {{ item.genre.split(",")[:2]|map("trim")|join(" · ") }}</span>{% endif %}
+        </div>
+
+        {% if logo %}
+          <img src="{{ logo }}" alt="{{ item.title }}" class="dp-logo" data-skel
+               onerror="this.style.display='none'; document.getElementById('dpTitleFallback').style.display='block';">
+          <h1 class="dp-title dp-title--hidden" id="dpTitleFallback">{{ item.title }}</h1>
+        {% else %}
+          <h1 class="dp-title">{{ item.title }}</h1>
+        {% endif %}
+
+        {% if item_type == "series" and not item.is_watchlist() %}
+        <div class="dp-hero-progress-line">
+          {% if item.is_anime() %}Episode {{ item.episodes_watched }}{% if item.total_episodes %} of {{ item.total_episodes }}{% endif %}
+          {% else %}S{{ item.current_season }}, E{{ item.current_episode }} of {{ item.episodes_in_current_season }}{% endif %}
+          <span class="dp-dot"></span>{{ item.progress_percent() }}% complete
+        </div>
+        {% endif %}
+
+        <div class="dp-chips">
+          <span class="dp-chip dp-chip--outline">{{ item.year }}</span>
+          {% if runtime_display %}<span class="dp-chip dp-chip--outline">{{ runtime_display }}</span>{% endif %}
+          <span class="dp-chip dp-chip--{{ item.status }}">{{ item.status|capitalize }}</span>
+          {% if item.imdb_rating %}
+          {% if imdb_id %}
+          <a class="dp-chip dp-chip--imdb" href="https://www.imdb.com/title/{{ imdb_id }}/" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            {{ item.imdb_rating }} IMDb
+          </a>
+          {% else %}
+          <span class="dp-chip dp-chip--imdb">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            {{ item.imdb_rating }} IMDb
+          </span>
+          {% endif %}
+          {% endif %}
+          {% if item_type == "movie" and item.is_watched() and item.rating is number %}
+          <span class="dp-chip dp-chip--rated">★ {{ item.rating }}/10 mine</span>
+          {% elif item_type == "series" and item.rating %}
+          <span class="dp-chip dp-chip--rated">★ {{ item.rating }}/10 mine</span>
+          {% endif %}
+        </div>
+
+        <p class="dp-plot dp-plot--3">{{ plot }}</p>
+
+        <!-- primary actions -->
+        <div class="dp-actions">
+          {% if item_type == "movie" %}
+
+            <!-- Row 1: Play Trailer + watched state, right next to each other -->
+            <div class="dp-actions-row">
+              <a class="dp-btn" href="https://www.youtube.com/results?search_query={{ item.title }}+trailer" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M8 5v14l11-7z"/></svg>
+                Play Trailer
+              </a>
+
+              {% if item.is_watchlist() %}
+                <div class="dp-btn-wrap">
+                  <button type="button" class="dp-btn dp-btn--success" onclick="dpTogglePopover('dpWatchPop')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M20 6L9 17l-5-5"/></svg>
+                    Mark Watched
+                  </button>
+                  <form action="{{ url_for('markwatched') }}" method="POST" class="dp-rate-pop" id="dpWatchPop">
+                    <input type="hidden" name="movie_name" value="{{ item.title }}">
+                    <input type="number" name="rating" min="1" max="10" placeholder="1–10" class="dp-mini-input" required>
+                    <button type="submit" class="dp-pop-confirm" title="Confirm">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M20 6L9 17l-5-5"/></svg>
+                      Confirm
+                    </button>
+                  </form>
+                </div>
+              {% else %}
+                <span class="dp-btn dp-btn--success dp-btn--static">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M20 6L9 17l-5-5"/></svg>
+                  Watched
+                </span>
+              {% endif %}
+            </div>
+
+            {% if not item.is_watchlist() %}
+            <!-- Row 2: Edit Rating + Delete, directly under row 1 -->
+            <div class="dp-actions-row">
+              <div class="dp-btn-wrap">
+                <button type="button" class="dp-btn dp-btn--gold" onclick="dpTogglePopover('dpRatePop')">
+                  <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  Edit Rating
+                </button>
+                <form action="{{ url_for('editrating') }}" method="POST" class="dp-rate-pop" id="dpRatePop">
+                  <input type="hidden" name="movie_name" value="{{ item.title }}">
+                  <input type="number" name="rating" min="1" max="10" value="{{ item.rating if item.rating is number else '' }}" class="dp-mini-input" required>
+                  <button type="submit" class="dp-pop-confirm" title="Save">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M20 6L9 17l-5-5"/></svg>
+                    Save
+                  </button>
+                </form>
+              </div>
+              <form action="{{ url_for('deletemovie') }}" method="POST" onsubmit="return confirm('Remove {{ item.title }} from your collection?');">
+                <input type="hidden" name="movie_name" value="{{ item.title }}">
+                <button type="submit" class="dp-btn dp-btn--danger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+                  Delete
+                </button>
+              </form>
+            </div>
+
+            <!-- Row 3: Move to Watchlist, its own line, unchanged position -->
+            <div class="dp-actions-row">
+              <form action="{{ url_for('unwatch') }}" method="POST">
+                <input type="hidden" name="movie_name" value="{{ item.title }}">
+                <button type="submit" class="dp-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M6 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16l-6-4-6 4V4z"/></svg>
+                  Move to Watchlist
+                </button>
+              </form>
+            </div>
+            {% else %}
+            <!-- Watchlist state: only Delete, kept close to row 1 -->
+            <div class="dp-actions-row">
+              <form action="{{ url_for('deletemovie') }}" method="POST" onsubmit="return confirm('Remove {{ item.title }} from your collection?');">
+                <input type="hidden" name="movie_name" value="{{ item.title }}">
+                <button type="submit" class="dp-btn dp-btn--danger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+                  Delete
+                </button>
+              </form>
+            </div>
+            {% endif %}
+
+          {% else %}
+
+            <!-- Series — Row 1: Play Trailer + status capsule together -->
+            <div class="dp-actions-row">
+              <a class="dp-btn" href="https://www.youtube.com/results?search_query={{ item.title }}+trailer" target="_blank" rel="noopener">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M8 5v14l11-7z"/></svg>
+                Play Trailer
+              </a>
+              <div class="dp-select-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M20 6L9 17l-5-5"/></svg>
+                <form action="{{ url_for('updateseries') }}" method="POST" id="dpStatusForm">
+                  <input type="hidden" name="title" value="{{ item.title }}">
+                  <input type="hidden" name="show_type" value="{{ item.show_type }}">
+                  <select name="status" class="dp-select" onchange="this.form.submit()">
+                    {% for st in ["watchlist","watching","paused","completed"] %}
+                      <option value="{{ st }}" {{ "selected" if item.status == st }}>{{ st|capitalize }}</option>
+                    {% endfor %}
+                  </select>
+                </form>
+              </div>
+            </div>
+
+            <!-- Row 2: Delete, directly under row 1 -->
+            <div class="dp-actions-row">
+              <form action="{{ url_for('deleteseries') }}" method="POST" onsubmit="return confirm('Remove {{ item.title }} from your collection?');">
+                <input type="hidden" name="title" value="{{ item.title }}">
+                <button type="submit" class="dp-btn dp-btn--danger">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/></svg>
+                  Delete
+                </button>
+              </form>
+            </div>
+
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- SIDE (bottom-right): Director/Creator + Starring, mirrors the reference layout -->
+      {% if director or cast %}
+      <div class="dp-hero-side">
+        {% if director %}
+        <div class="dp-hero-credit">
+          <b>{{ "Director" if item_type == "movie" else "Creator" }}</b>
+          <span>{{ director }}</span>
+        </div>
+        {% endif %}
+        {% if cast %}
+        <div class="dp-hero-credit">
+          <b>Starring</b>
+          <span>{{ cast[:3]|map(attribute="name")|join(", ") }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+  <!-- ============ PROGRESS (series only) ============ -->
+  {% if item_type == "series" %}
+  <div class="dp-progress">
+    <div class="dp-ring">
+      <svg viewBox="0 0 64 64">
+        <circle class="dp-ring-bg" cx="32" cy="32" r="26"/>
+        <circle class="dp-ring-fg" cx="32" cy="32" r="26"
+                stroke-dashoffset="163.4"
+                data-target="{{ (163.4 - (163.4 * item.progress_percent() / 100))|round(2) }}"></circle>
+      </svg>
+      <div class="dp-ring-pct">{{ item.progress_percent() }}%</div>
+    </div>
+    <div class="dp-progress-text">
+      {% if item.is_anime() %}
+        <div class="dp-progress-label">Anime progress</div>
+        <div class="dp-progress-value">{{ item.episodes_watched }} of {{ item.total_episodes }} episodes watched</div>
+      {% else %}
+        <div class="dp-progress-label">Season {{ item.current_season }} · Episode {{ item.current_episode }} of {{ item.episodes_in_current_season }}</div>
+        <div class="dp-progress-value">{{ item.total_seasons }} season{{ "s" if item.total_seasons != 1 }} total</div>
+      {% endif %}
+    </div>
+    <div class="dp-progress-status">
+      <span class="dp-chip dp-chip--{{ item.status }}">{{ item.status|capitalize }}</span>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ============ EPISODES ============ -->
+  {% if item_type == "series" and item.is_tv() %}
+  <section class="dp-section">
+    <div class="dp-section-head">
+      <div class="dp-section-title-group">
+        {% if season_poster %}<img src="{{ season_poster }}" class="dp-season-poster" alt="Season {{ viewing_season }} poster" onerror="this.style.display='none';">{% endif %}
+        <h2>Episodes</h2>
+      </div>
+      <div class="dp-section-head-right">
+        {% if item.total_seasons and item.total_seasons > 1 %}
+        {% set season_base_url = url_for('showdetail', title=item.title) %}
+        <select class="dp-select dp-select--small" onchange="location.href='{{ season_base_url }}?season=' + this.value">
+          {% for n in range(1, item.total_seasons + 1) %}
+            <option value="{{ n }}" {{ "selected" if n == viewing_season }}>Season {{ n }}</option>
+          {% endfor %}
+        </select>
+        {% endif %}
+        <span class="dp-sub">{{ episodes|length }} episodes</span>
+      </div>
+    </div>
+
+    {% if episodes %}
+    <div class="dp-carousel">
+      <button class="dp-scroll-btn dp-scroll-left" onmousedown="dpStartScroll('epRow',-1)" onmouseup="dpStopScroll()" onmouseleave="dpStopScroll()" aria-label="Scroll left">‹</button>
+      <div class="dp-ep-strip" id="epRow">
+        {% for ep in episodes %}
+        <div class="dp-ep-card {{ 'is-watched' if ep.watched else 'is-upcoming' }}">
+          <div class="dp-ep-thumb dp-grad-{{ (loop.index0 % 6) + 1 }}" data-skel-wrap>
+            {% if ep.still %}
+            <img class="dp-ep-still" src="{{ ep.still }}" alt="{{ ep.title }}" loading="lazy" data-skel onerror="this.style.display='none';">
+            {% endif %}
+            <div class="dp-ep-scrim"></div>
+            <svg class="dp-ep-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <span class="dp-ep-num">E{{ ep.number }}</span>
+            {% if ep.watched %}
+            <div class="dp-ep-check">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#0d0d0f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="11" height="11"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            {% endif %}
+          </div>
+          <div class="dp-ep-body">
+            <div class="dp-ep-title">{{ ep.title }}</div>
+            <div class="dp-ep-sub">
+              {% if ep.rating %}<span class="dp-ep-rating"><svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>{{ ep.rating }}</span>{% endif %}
+              {% if ep.runtime_display %}<span>{{ ep.runtime_display }}</span>{% endif %}
+              {% if ep.air_date %}<span>{{ ep.air_date }}</span>{% endif %}
+            </div>
+            {% if ep.overview %}
+            <p class="dp-ep-overview">{{ ep.overview }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <button class="dp-scroll-btn dp-scroll-right" onmousedown="dpStartScroll('epRow',1)" onmouseup="dpStopScroll()" onmouseleave="dpStopScroll()" aria-label="Scroll right">›</button>
+    </div>
+    {% else %}
+    <p class="dp-empty-note">No episode data found for this season.</p>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  <!-- ============ CAST & CREW ============ -->
+  {% if cast %}
+  <section class="dp-section">
+    <div class="dp-section-head"><h2>Cast &amp; Crew</h2></div>
+    <div class="dp-carousel">
+      <button class="dp-scroll-btn dp-scroll-left" onmousedown="dpStartScroll('castRow',-1)" onmouseup="dpStopScroll()" onmouseleave="dpStopScroll()" aria-label="Scroll left">‹</button>
+      <div class="dp-cast-strip" id="castRow">
+        {% for c in cast %}
+        <div class="dp-cast-card">
+          <div class="dp-cast-av dp-grad-{{ (loop.index0 % 6) + 1 }}" data-skel-wrap>
+            <span class="dp-cast-initials">{{ c.name.split(" ")|map("first")|join("") }}</span>
+            {% if c.photo %}
+            <img src="{{ c.photo }}" alt="{{ c.name }}" loading="lazy" data-skel onerror="this.style.display='none';">
+            {% endif %}
+          </div>
+          <div class="dp-cast-name">{{ c.name }}</div>
+          <div class="dp-cast-role">{{ c.role }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <button class="dp-scroll-btn dp-scroll-right" onmousedown="dpStartScroll('castRow',1)" onmouseup="dpStopScroll()" onmouseleave="dpStopScroll()" aria-label="Scroll right">›</button>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ============ MORE LIKE THIS ============ -->
+  {% if similar %}
+  <section class="dp-section">
+    <div class="dp-section-head">
+      <h2>{{ "Similar Movies" if item_type == "movie" else "Similar Shows" }}</h2>
+      <span class="dp-sub">via TMDb</span>
+    </div>
+    <div class="dp-carousel">
+      <button class="dp-scroll-btn dp-scroll-left" onmousedown="dpStartScroll('recRow',-1)" onmouseup="dpStopScroll()" onmouseleave="dpStopScroll()" aria-label="Scroll left">‹</button>
+      <div class="dp-rec-strip" id="recRow">
+        {% for s in similar %}
+        <div class="dp-rec-card">
+          <a class="dp-rec-poster-link" href="{{ s.url }}" {{ 'target="_blank" rel="noopener"' if s.url.startswith('http') else '' }}>
+            <div class="dp-rec-poster-wrap" data-skel-wrap>
+              {% if s.poster %}
+              <img class="dp-rec-poster-img" src="{{ s.poster }}" alt="{{ s.title }}" loading="lazy" data-skel onerror="this.style.display='none'; this.parentElement.classList.add('dp-rec-poster-fallback');">
+              {% else %}
+              <div class="dp-rec-poster-fallback-inner">{{ s.title[:1] }}</div>
+              {% endif %}
+              {% if s.rating %}
+              <div class="dp-rec-rating">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                {{ s.rating }}
+              </div>
+              {% endif %}
+            </div>
+            <div class="dp-rec-title">{{ s.title }}</div>
+          </a>
+          {% if not s.owned %}
+          <button type="button" class="dp-rec-add" onclick="dpQuickAdd(event, this, '{{ s.type }}', '{{ s.title|e }}')">
+            + Add
+          </button>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      <button class="dp-scroll-btn dp-scroll-right" onmousedown="dpStartScroll('recRow',1)" onmouseup="dpStopScroll()" onmouseleave="dpStopScroll()" aria-label="Scroll right">›</button>
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+
+<script>
+  // progress ring fill
+  const dpRing = document.querySelector('.dp-ring-fg');
+  if (dpRing) {
+    setTimeout(() => { dpRing.style.strokeDashoffset = dpRing.dataset.target; }, 150);
+  }
+
+  // shared carousel scroll helper for episodes / cast / recommendations
+  let dpScrollInterval = null;
+  function dpStartScroll(rowId, direction) {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    row.scrollBy({ left: direction * 240, behavior: "smooth" });
+    dpScrollInterval = setTimeout(() => {
+      dpScrollInterval = setInterval(() => {
+        row.scrollBy({ left: direction * 180, behavior: "smooth" });
+      }, 150);
+    }, 400);
+  }
+  function dpStopScroll() {
+    clearTimeout(dpScrollInterval);
+    clearInterval(dpScrollInterval);
+    dpScrollInterval = null;
+  }
+
+  // rating popover — floats absolutely under its button, toggled purely by class
+  function dpTogglePopover(id) {
+    document.querySelectorAll('.dp-rate-pop.open').forEach(el => {
+      if (el.id !== id) el.classList.remove('open');
+    });
+    const pop = document.getElementById(id);
+    if (!pop) return;
+    const isOpen = pop.classList.toggle('open');
+    if (isOpen) {
+      const input = pop.querySelector('input[type="number"]');
+      if (input) input.focus();
+    }
+  }
+
+  // ── Quick-add: adds a similar/recommended title straight to your
+  // collection in the background, no page reload. Button updates itself
+  // once the server confirms it was saved. ──
+  function dpQuickAdd(event, btn, kind, title) {
+    event.preventDefault();
+    event.stopPropagation();
+    btn.disabled = true;
+    btn.textContent = 'Adding…';
+
+    fetch("{{ url_for('quickadd') }}", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `kind=${encodeURIComponent(kind)}&title=${encodeURIComponent(title)}`
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        btn.textContent = '✓ Added';
+        btn.classList.add('dp-rec-add--done');
+      } else {
+        btn.textContent = data.message || 'Already added';
+        btn.classList.add('dp-rec-add--done');
+      }
+    })
+    .catch(() => {
+      btn.textContent = 'Error — retry';
+      btn.disabled = false;
+    });
+  }
+
+  // ── Image skeleton shimmer: fade each image in once it finishes loading ──
+  document.querySelectorAll('img[data-skel]').forEach(img => {
+    const wrapper = img.closest('[data-skel-wrap]') || img.parentElement;
+    wrapper.classList.add('dp-skel');
+
+    function reveal() {
+      img.classList.add('dp-loaded');
+      wrapper.classList.remove('dp-skel');
+    }
+
+    if (img.complete && img.naturalWidth > 0) {
+      reveal();
+    } else {
+      img.addEventListener('load', reveal);
+      img.addEventListener('error', () => wrapper.classList.remove('dp-skel'));
+    }
+  });
+
+  // ── Hero backdrop shimmer (background-image, not a real <img>) ──
+  const heroBg = document.getElementById('dpHeroBg');
+  if (heroBg) {
+    const url = heroBg.dataset.bg;
+    const testImg = new Image();
+    testImg.onload = () => {
+      heroBg.style.backgroundImage = `url('${url}')`;
+      heroBg.classList.remove('dp-skel');
+    };
+    testImg.onerror = () => {
+      heroBg.classList.remove('dp-skel');
+    };
+    testImg.src = url;
+  }
+</script>
+{% endblock %}

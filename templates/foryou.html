@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}For You — Watchi{% endblock %}
+{% block content %}
+<style>
+  .fy-wrap{ max-width: 1160px; margin: 0 auto; padding: 24px; }
+  .fy-header h1{ font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .fy-header p{ font-size: 14px; color: var(--text-muted); }
+
+  .fy-genres{ display: flex; gap: 8px; flex-wrap: wrap; margin: 18px 0 32px; }
+  .fy-genre-chip{
+    padding: 6px 14px; border-radius: 50px;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 12px; font-weight: 700; color: var(--accent);
+  }
+
+  .fy-grid{ display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 22px; }
+  .fy-card{ color: var(--text); }
+
+  .fy-poster{
+    position: relative; aspect-ratio: 2/3; border-radius: 14px; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border); margin-bottom: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    transition: box-shadow .25s cubic-bezier(0.4,0,0.2,1), transform .25s cubic-bezier(0.4,0,0.2,1);
+  }
+  .fy-poster:hover{ box-shadow: 0 20px 36px rgba(0,0,0,0.28); transform: translateY(-6px); }
+  .fy-poster img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .fy-type-badge{
+    position: absolute; top: 8px; left: 8px; z-index: 2;
+    background: rgba(8,8,10,0.65); color: #d8b876;
+    padding: 3px 9px; border-radius: 50px;
+    font-size: 9.5px; font-weight: 800; letter-spacing: .06em;
+    backdrop-filter: blur(6px);
+  }
+
+  .fy-rating{
+    position: absolute; top: 8px; right: 8px; z-index: 2;
+    display: flex; align-items: center; gap: 4px;
+    background: rgba(8,8,10,0.6); color: #f5c518;
+    padding: 3px 8px; border-radius: 50px; font-size: 10.5px; font-weight: 800;
+    backdrop-filter: blur(6px);
+  }
+
+  .fy-tmdb-link{
+    position: absolute; bottom: 8px; right: 8px; z-index: 2;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(8,8,10,0.6); color: rgba(255,255,255,0.75);
+    backdrop-filter: blur(6px);
+    opacity: 0; transition: opacity .2s, background .2s, color .2s;
+  }
+  .fy-poster:hover .fy-tmdb-link{ opacity: 1; }
+  .fy-tmdb-link:hover{ background: rgba(8,8,10,0.85); color: #fff; }
+
+  .fy-add-form{
+    position: absolute; inset: 0; z-index: 1;
+    display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 14px;
+    background: linear-gradient(180deg, transparent 55%, rgba(8,8,10,0.75) 100%);
+    opacity: 0; transition: opacity .2s cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+  }
+  .fy-poster:hover .fy-add-form{ opacity: 1; pointer-events: auto; }
+  .fy-add-btn{
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 16px; border-radius: 50px;
+    background: linear-gradient(135deg, #e8c98d, #c8a96e);
+    color: #16130c; border: none; cursor: pointer;
+    font-family: inherit; font-size: 11.5px; font-weight: 800;
+    box-shadow: 0 6px 18px rgba(200,169,110,0.4);
+    transition: transform .2s cubic-bezier(0.4,0,0.2,1);
+  }
+  .fy-add-btn:hover{ transform: translateY(-2px) scale(1.04); }
+  .fy-add-btn:active{ transform: translateY(0) scale(0.97); }
+
+  .fy-title{
+    font-size: 13px; font-weight: 700; margin-bottom: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .fy-reason{ font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+  .fy-empty{ text-align: center; padding: 90px 20px; color: var(--text-muted); }
+  .fy-empty h2{ color: var(--text); font-size: 20px; margin-bottom: 8px; }
+  .fy-empty p{ font-size: 14px; max-width: 380px; margin: 0 auto; }
+</style>
+
+<div class="fy-wrap">
+  <div class="fy-header">
+    <h1>For You</h1>
+    <p>Built from what you've actually rated highly — not just what's popular right now.</p>
+  </div>
+
+  {% if not has_ratings %}
+    <div class="fy-empty">
+      <h2>Not enough data yet</h2>
+      <p>Rate a few movies or shows 7★ and up, and this page will build itself around your taste.</p>
+    </div>
+
+  {% elif recommendations %}
+    {% if top_genres %}
+    <div class="fy-genres">
+      {% for g in top_genres %}<span class="fy-genre-chip">{{ g }}</span>{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="fy-grid">
+      {% for r in recommendations %}
+      <div class="fy-card">
+        <div class="fy-poster">
+          {% if r.poster %}<img src="{{ r.poster }}" alt="{{ r.title }}" loading="lazy">{% endif %}
+
+          <span class="fy-type-badge">{{ "MOVIE" if r.type == "movie" else "TV" }}</span>
+
+          {% if r.rating %}
+          <div class="fy-rating">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            {{ r.rating }}
+          </div>
+          {% endif %}
+
+          <a class="fy-tmdb-link" href="https://www.themoviedb.org/{{ 'movie' if r.type == 'movie' else 'tv' }}/{{ r.id }}" target="_blank" rel="noopener" title="View on TMDb" onclick="event.stopPropagation()">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+
+          <form method="POST" action="{{ url_for('addmovie') if r.type == 'movie' else url_for('addseries') }}" class="fy-add-form">
+            {% if r.type == 'movie' %}
+              <input type="hidden" name="movie_name" value="{{ r.title }}">
+            {% else %}
+              <input type="hidden" name="title" value="{{ r.title }}">
+            {% endif %}
+            <input type="hidden" name="status" value="watchlist">
+            <button type="submit" class="fy-add-btn" title="Add to Watchlist">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add to Watchlist
+            </button>
+          </form>
+        </div>
+        <div class="fy-title">{{ r.title }}</div>
+        <div class="fy-reason">
+          Because you loved {{ r.reasons[0] }}{% if r.reasons|length > 1 %} +{{ r.reasons|length - 1 }} more{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  {% else %}
+    <div class="fy-empty">
+      <h2>Couldn't find anything new</h2>
+      <p>TMDb didn't have fresh matches this time — try rating a few more titles and check back.</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  // Add to Watchlist without leaving the page — fades the card out
+  // instead of navigating away, so you don't lose your place browsing
+  document.querySelectorAll('.fy-add-form').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const card = form.closest('.fy-card');
+      const btn = form.querySelector('.fy-add-btn');
+      btn.disabled = true;
+      btn.textContent = 'Adding…';
+
+      fetch(form.action, { method: 'POST', body: new FormData(form) })
+        .then(() => {
+          card.style.transition = 'opacity .3s ease, transform .3s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.92)';
+          setTimeout(() => card.remove(), 300);
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.textContent = 'Add to Watchlist';
+          alert('Something went wrong adding this — try again.');
+        });
+    });
+  });
+</script>
+{% endblock %}
