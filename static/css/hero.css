@@ -128,6 +128,7 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     border-color: rgba(200, 169, 110, 0.25);
 }
+
 .featured-series-progress {
     margin-top: 4px;
 }
@@ -151,6 +152,7 @@
     font-size: 11px;
     color: var(--text-muted);
 }
+
 /* Left — poster */
 .featured-poster-side {
     flex: 0 0 160px;
@@ -387,9 +389,9 @@
     transition: width 0.6s ease;
 }
 
-.accent-green { background: #5dbb7f; }
-.accent-blue  { background: #6495ed; }
-.accent-gold  { background: var(--accent); }
+.accent-green  { background: #5dbb7f; }
+.accent-blue   { background: #6495ed; }
+.accent-gold   { background: var(--accent); }
 .accent-orange { background: #e0a060; }
 
 /* ── Highlight card ── */
@@ -510,4 +512,157 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 500;
+}
+
+/* ============================================
+   MOBILE — hero, featured card, stats
+   ============================================ */
+
+@media (max-width: 780px) {
+    .hero {
+        padding: 40px 0 24px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+        letter-spacing: -1px;
+    }
+
+    .hero-subtitle {
+        font-size: 14px;
+        margin-bottom: 32px;
+    }
+
+    .hero-stats {
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 14px 18px;
+        min-width: 80px;
+    }
+
+    .stat-number {
+        font-size: 24px;
+    }
+
+    /* Hero action buttons full-width, stacked */
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .hero-actions .btn-primary,
+    .hero-actions .btn-secondary {
+        width: 100%;
+    }
+
+    /* Featured card — poster flush left, full height of the card.
+       The card's overflow:hidden + border-radius clips the poster corners. */
+    .featured-card {
+        align-items: stretch;
+        height: auto;
+        min-height: 170px;
+        gap: 0;
+    }
+
+    .featured-poster-side {
+        flex: 0 0 110px;
+        width: 110px;
+        height: auto;
+        min-height: 170px;
+        align-self: stretch;
+        border-radius: 0;
+        margin: 0;
+        padding: 0;
+    }
+
+    .featured-poster-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        border-radius: 0;
+    }
+
+    .featured-info-side {
+        min-width: 0;
+        padding: 18px 16px;
+    }
+
+    .featured-details {
+        flex-wrap: wrap;
+        gap: 4px 12px;
+    }
+
+    .featured-title {
+        font-size: 24px;
+    }
+
+    /* Stats page hero */
+    .stats-hero {
+        padding: 32px 0 24px;
+    }
+
+    .stats-hero-number {
+        font-size: 56px;
+        letter-spacing: -2px;
+    }
+
+    .stats-hero-split {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .stats-hero-divider {
+        display: none;
+    }
+
+    /* Stats grid — 4 columns is unreadable on a phone, drop to 2 */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-block-number {
+        font-size: 28px;
+    }
+
+    /* Highlight card content wraps better */
+    .stats-highlight-content {
+        gap: 10px;
+    }
+
+    .stats-highlight-title {
+        font-size: 14px;
+    }
+
+    /* Type split (Movies vs Shows count) — keep as row but shrink numbers */
+    .stats-type-number {
+        font-size: 24px;
+    }
+
+    .stats-type-card {
+        padding: 14px 10px;
+    }
+
+    .stats-episodes-number {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 420px) {
+    .hero-title {
+        font-size: 30px;
+    }
+
+    .stats-hero-number {
+        font-size: 44px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
 }

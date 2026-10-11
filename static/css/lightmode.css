@@ -173,3 +173,149 @@ body.light-mode .flip-btn-delete {
     color: #c0303d;
     border: 1px solid rgba(220, 53, 69, 0.2);
 }
+@media (max-width: 780px) {
+    body.light-mode .movie-card:hover,
+    body.light-mode .card-row .card-flip-wrapper:hover {
+        box-shadow: none;
+        transform: none;
+    }
+
+    body.light-mode .movie-card {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+    body.light-mode .nav-brand {
+        background: linear-gradient(135deg, #1d1d1f 0%, #a07840 55%, #1d1d1f 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: none;
+    }
+    body.light-mode .profile-menu {
+        background: rgba(225, 225, 225, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.1)
+    }
+    body.light-mode .profile-menu::before {
+        background: rgba(255, 255, 255, 0.95);
+        border-left: 1px solid rgba(0, 0 , 0, 0.1);
+        border-top: 1px solid rgba(0, 0 , 0, 0.1);
+    }
+}
+/* --- MOBILE MENU (light mode, glass) --- */
+@media (max-width: 780px) {
+    /* A child's backdrop-filter can't blur the page while its parent <nav>
+       has one too, so the nav's blur moves to a pseudo-element instead. */
+    body.light-mode nav {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+    }
+
+    body.light-mode nav::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        backdrop-filter: blur(28px) saturate(180%);
+        -webkit-backdrop-filter: blur(28px) saturate(180%);
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    body.light-mode .nav-links {
+        background: rgba(255, 255, 255, 0.32);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.65);
+        box-shadow:
+            0 20px 50px rgba(60, 40, 110, 0.18),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    body.light-mode .nav-links a {
+        color: #1d1d1f;
+    }
+
+    body.light-mode .nav-links a:hover {
+        background: rgba(255, 255, 255, 0.45);
+    }
+
+    body.light-mode .nav-links a.active {
+        color: #f0f0f0;
+        background: rgba(29, 29, 31, 0.88);
+    }
+
+    /* 🌙 mode button: full width, black shadow, hover lift */
+    body.light-mode #mode-btn {
+        align-self: stretch;
+        width: 100% !important;
+        padding: 10px 14px !important;
+        margin-top: 4px;
+        border-radius: 50px !important;
+        background: rgba(255, 255, 255, 0.4) !important;
+        border: 1px solid rgba(255, 255, 255, 0.7) !important;
+        color: #1d1d1f !important;
+        box-shadow:
+            0 6px 16px rgba(0, 0, 0, 0.22),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        transition: transform 0.25s ease,
+                    box-shadow 0.25s ease,
+                    background 0.25s ease;
+    }
+
+    body.light-mode #mode-btn:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.6) !important;
+        box-shadow:
+            0 10px 24px rgba(0, 0, 0, 0.32),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    body.light-mode #mode-btn:active {
+        transform: scale(0.98);
+    }
+}
+
+/* --- SEARCH SUGGESTIONS DROPDOWN (light mode, glass) --- */
+body.light-mode .suggestions-box {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 12px 32px rgba(60, 40, 110, 0.15);
+}
+
+body.light-mode .suggestion-item {
+    color: #1d1d1f;
+}
+
+body.light-mode .suggestion-item:hover {
+    background: rgba(255, 255, 255, 0.6);
+    color: #a07840;
+}
+/* --- ☀️ mode button (dark mode, mobile menu) --- */
+@media (max-width: 780px) {
+    body:not(.light-mode) #mode-btn {
+        align-self: stretch;
+        width: 100% !important;
+        padding: 10px 14px !important;
+        margin-top: 4px;
+        border-radius: 50px !important;
+        background: rgba(0, 0, 0, 0.25) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        color: #f0f0f0 !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);   /* black shadow only, no glow */
+        transition: transform 0.25s ease,
+                    box-shadow 0.25s ease;
+    }
+
+    body:not(.light-mode) #mode-btn:hover {
+        transform: translateY(-2px);
+        background: rgba(0, 0, 0, 0.25) !important;
+        box-shadow:
+            0 0 22px rgba(255, 255, 255, 0.4),         /* white glow on hover only */
+            0 12px 26px rgba(0, 0, 0, 0.8);
+    }
+
+    body:not(.light-mode) #mode-btn:active {
+        transform: scale(0.98);
+    }
+}

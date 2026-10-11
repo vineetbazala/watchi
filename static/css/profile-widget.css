@@ -34,15 +34,19 @@
 .profile-avatar-btn:active{ transform: scale(0.95); }
 .profile-avatar-btn img{ width: 100%; height: 100%; object-fit: cover; display: block; }
 
+/* Solid, near-opaque background — NOT var(--surface), which is only ~5%
+   opacity and meant for subtle inline cards. A floating popover with
+   text/photos needs real contrast against whatever page content sits
+   behind it, or everything reads as washed-out and illegible. */
 .profile-menu{
   position: fixed; top: 60px; right: 20px;
   width: 250px;
-  background: var(--surface, #16161a);
-  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  background: rgba(18, 18, 22, 0.94);
+  backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: 16px;
   padding: 8px;
-  box-shadow: 0 20px 50px -10px rgba(0,0,0,0.4);
+  box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5);
   opacity: 0; visibility: hidden; transform-origin: top right;
   transform: translateY(-6px) scale(0.96);
   transition: opacity .18s cubic-bezier(0.4,0,0.2,1), transform .18s cubic-bezier(0.4,0,0.2,1), visibility .18s;
@@ -55,9 +59,9 @@
 .profile-menu::before{
   content: ''; position: absolute; top: -5px; right: 14px;
   width: 10px; height: 10px;
-  background: var(--surface, #16161a);
-  border-left: 1px solid var(--border, rgba(255,255,255,0.1));
-  border-top: 1px solid var(--border, rgba(255,255,255,0.1));
+  background: rgba(18, 18, 22, 0.94);
+  border-left: 1px solid rgba(255,255,255,0.12);
+  border-top: 1px solid rgba(255,255,255,0.12);
   transform: rotate(45deg);
 }
 
@@ -108,3 +112,55 @@
 .profile-menu-item--danger{ color: #ff9aa2; }
 .profile-menu-item--danger svg{ color: #ff9aa2; }
 .profile-menu-item--danger:hover{ background: rgba(220,53,69,0.12); }
+
+/* ============================================
+   MOBILE — reposition profile widget since nav
+   becomes position:fixed and leaves .topbar's
+   normal flex flow (see base.css nav rules)
+   ============================================ */
+
+@media (max-width: 780px) {
+    .topbar {
+        position: static;
+        margin-top: 0;
+        display: block;
+    }
+
+    .topbar + .container {
+        margin-top: 70px !important; /* matches base.css's nav clearance */
+    }
+
+    .profile-widget {
+        position: fixed;
+        top: 12px;
+        right: 14px;
+        z-index: 1001;
+        padding: 3px;
+        background: rgba(255, 255, 255, 0.09);
+        backdrop-filter: blur(28px) saturate(180%);
+        -webkit-backdrop-filter: blur(28px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 50%;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .profile-avatar-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .profile-menu {
+        top: 62px;
+        right: 12px;
+        width: calc(100vw - 24px);
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 360px) {
+    .profile-menu {
+        width: calc(100vw - 16px);
+        right: 8px;
+    }
+}

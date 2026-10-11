@@ -68,7 +68,6 @@ def gather_recommendations(profile, owned_titles,
         if seed["type"] == "movie":
             hit = tmdb.search_movie(seed["title"], seed["year"])
             if not hit:
-                print(f"[taste] no TMDb match for movie seed: {seed['title']}")
                 continue
             details = tmdb.get_movie_details(hit["id"])
             recs = tmdb.get_recommendations(details)
@@ -76,7 +75,7 @@ def gather_recommendations(profile, owned_titles,
         else:
             hit = tmdb.search_tv(seed["title"], seed["year"])
             if not hit:
-                print(f"[taste] no TMDb match for series seed: {seed['title']}")
+
                 continue
             details = tmdb.get_tv_details(hit["id"])
             recs = tmdb.get_recommendations(details, is_anime=seed["is_anime"])
@@ -106,8 +105,6 @@ def gather_recommendations(profile, owned_titles,
             candidates[key]["reasons"].append(seed["title"])
             candidates[key]["score"] += seed["rating"]
             added += 1
-
-        print(f"[taste] seed '{seed['title']}' ({kind}, {seed['rating']}/10): added {added} candidates")
 
     ranked = sorted(
         candidates.values(),

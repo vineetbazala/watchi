@@ -509,15 +509,35 @@ a.dp-chip--imdb:hover{ background: rgba(245,197,24,0.3); box-shadow: 0 0 16px rg
    ============================================ */
 
 @media(max-width: 780px){
-  .dp-hero{ aspect-ratio: auto; min-height: 520px; max-height: none; border-radius: 16px; }
-  .dp-hero-content{ flex-direction: column; align-items: flex-start; padding: 24px 22px; gap: 16px; }
-  .dp-hero-side{ text-align: left; max-width: 100%; }
-  .dp-title{ font-size: 28px; }
-  .dp-logo{ max-width: 220px; max-height: 70px; }
+  .dp-hero{ aspect-ratio: auto; min-height: 0; max-height: none; border-radius: 16px; }
+  .dp-hero-content{
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 18px;
+  gap: 12px;
+  min-height: 340px;
+  background: linear-gradient(180deg, rgba(5,5,7,0.55) 0%, rgba(5,5,7,0.88) 35%, rgba(5,5,7,0.97) 100%);
+  border-radius: 16px;
+}
+.dp-hero-side{
+  text-align: left;
+  max-width: 100%;
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+}
+  .dp-title{ font-size: 24px; }
+  .dp-logo{ max-width: 180px; max-height: 56px; }
   .dp-plot{ -webkit-line-clamp: 3; }
   .dp{ padding: 16px 16px 50px; }
   .dp-progress{ padding: 18px 20px; }
   .dp-ep-card{ width: 220px; }
+  .dp-hero-bg {
+    background-position: center 20%;
+  }
 }
 
 @media(max-width: 420px){
@@ -555,4 +575,184 @@ img[data-skel]{
 }
 img[data-skel].dp-loaded{
   opacity: 1;
+}
+/* ============================================
+   MOBILE — hero poster, carousels, buttons, touch
+   Keep this at the very END of detail.css so it overrides earlier rules
+   ============================================ */
+
+@media (max-width: 780px) {
+
+    /* ---------- HERO: poster visible behind the text ---------- */
+    .dp-hero {
+        display: block;
+        min-height: 0;
+        max-height: none;
+        aspect-ratio: auto;
+        border-radius: 16px;
+        background: #08080a;
+    }
+
+    /* Poster spans the top of the card, uncropped, with no dark overlay on it */
+    .dp-hero .dp-hero-bg {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: auto;
+        height: 62vw;
+        background-size: cover;
+        background-position: center top;
+    }
+
+    /* Bright at the top, fading to solid dark where the text sits */
+    .dp-hero .dp-hero-scrim {
+        display: block;
+        background: linear-gradient(180deg,
+            rgba(8,8,10,0) 0,
+            rgba(8,8,10,0) 28vw,
+            rgba(8,8,10,0.85) 52vw,
+            #08080a 64vw);
+    }
+
+    .dp-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: flex-start;
+        height: auto;
+        min-height: 0;
+        padding: 32vw 18px 22px;
+        gap: 12px;
+        background: none;
+        border-radius: 0;
+    }
+
+    .dp-hero-main {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    /* Director / Starring: plain text like desktop, no boxed card */
+    .dp-hero-side {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px 28px;
+        text-align: left;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 6px;
+        padding: 14px 0 0;
+        background: none;
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0;
+    }
+
+    .dp-title { font-size: 24px; }
+    .dp-logo { max-width: 180px; max-height: 56px; }
+    .dp-plot { -webkit-line-clamp: 3; }
+    .dp { padding: 16px 16px 50px; }
+    .dp-progress { padding: 18px 20px; }
+    .dp-ep-card { width: 220px; }
+
+    /* ---------- CAROUSELS ---------- */
+
+    /* Scroll arrows are pointless on touch: swiping IS the interaction */
+    .dp-scroll-btn {
+        display: none;
+    }
+
+    .dp-carousel {
+        gap: 0;
+    }
+
+    /* Smooth momentum swiping on iOS */
+    .dp-ep-strip,
+    .dp-cast-strip,
+    .dp-rec-strip {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ---------- BUTTONS ---------- */
+
+    /* Touch-friendly tap sizes */
+    .dp-btn {
+        height: 40px;
+        padding: 0 14px;
+    }
+
+    .dp-select-wrap {
+        height: 40px;
+    }
+
+    /* Rating popover: shrinks instead of overflowing off-screen */
+    .dp-rate-pop {
+        max-width: calc(100vw - 48px);
+    }
+
+    .dp-mini-input {
+        width: 46px;
+        font-size: 16px; /* stops iOS from zooming into the field on focus */
+    }
+
+    /* ---------- CARDS ---------- */
+
+    .dp-cast-card {
+        width: 82px;
+    }
+
+    .dp-cast-av {
+        width: 64px;
+        height: 64px;
+    }
+
+    .dp-rec-card {
+        width: 130px;
+    }
+
+    .dp-section-head {
+        gap: 8px;
+    }
+}
+
+@media (max-width: 420px) {
+    .dp-title { font-size: 24px; }
+
+    .dp-chips { gap: 6px; }
+    .dp-chip { font-size: 11px; padding: 4px 10px; }
+
+    /* Director/Starring stays visible on small phones (it used to be hidden) */
+    .dp-hero-side {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dp-ep-card {
+        width: 200px;
+    }
+
+    .dp-rec-card {
+        width: 115px;
+    }
+
+    .dp-cast-card {
+        width: 74px;
+    }
+}
+
+/* Phones have no hover, so stop cards from getting stuck "lifted" after a tap */
+@media (hover: none) {
+    .dp-ep-card:hover,
+    .dp-cast-card:hover,
+    .dp-rec-card:hover {
+        transform: none;
+    }
+
+    .dp-rec-poster-wrap,
+    .dp-rec-rating {
+        opacity: 1;
+    }
+
+    .dp-rec-rating {
+        transform: none; /* show the rating badge without needing hover */
+    }
 }

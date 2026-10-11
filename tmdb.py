@@ -26,7 +26,6 @@ def _get(path, params=None):
             last_error = f"status {r.status_code}: {r.text[:200]}"
         except Exception as e:
             last_error = e
-    print(f"[tmdb] FAILED {path} params={ {k:v for k,v in params.items() if k != 'api_key'} } -> {last_error}")
     return {}
 
 
@@ -37,8 +36,10 @@ def search_movie(title, year=None):
         digits = "".join(c for c in str(year) if c.isdigit())[:4]
         if digits:
             params["year"] = digits
-    data = _get("/search/movie", params)
-    results = data.get("results", [])
+    results = _get("/search/movie", params).get("results", [])
+    if not results and "year" in params:
+        params.pop("year")
+        results = _get("/search/movie", params).get("results", [])
     return results[0] if results else None
 
 
@@ -49,8 +50,10 @@ def search_tv(title, year=None):
         digits = "".join(c for c in str(year) if c.isdigit())[:4]
         if digits:
             params["first_air_date_year"] = digits
-    data = _get("/search/tv", params)
-    results = data.get("results", [])
+    results = _get("/search/tv", params).get("results", [])
+    if not results and "first_air_date_year" in params:
+        params.pop("first_air_date_year")
+        results = _get("/search/tv", params).get("results", [])
     return results[0] if results else None
 
 

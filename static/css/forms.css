@@ -373,3 +373,58 @@ body.light-mode .add-toggle-btn.active {
     border: none;
     font-size: 13px;
 }
+/* ============================================
+   MOBILE — forms, buttons, touch targets
+   ============================================ */
+
+@media (max-width: 780px) {
+    form {
+        max-width: 100%;
+        gap: 14px;
+    }
+
+    /* Buttons/inputs need to be at least ~44px tall to comfortably tap */
+    input, select {
+        padding: 13px 16px;
+        font-size: 16px; /* 16px prevents iOS Safari from auto-zooming into the field on focus */
+    }
+
+    button {
+        padding: 13px 24px;
+        font-size: 15px;
+    }
+
+    .btn-primary, .btn-secondary {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: 14px 20px;
+    }
+
+    /* Search result edit controls stack instead of cramming into one row */
+    .search-result-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-result-controls form {
+        flex-wrap: wrap;
+    }
+
+    .search-edit-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-edit-panel form {
+        flex-wrap: wrap;
+    }
+
+    /* Sort dropdown needs a bit more width and tap room on small screens */
+    .sort-box select {
+        font-size: 13px;
+        padding: 8px 12px;
+        width: auto;
+        max-width: 200px;
+    }
+}

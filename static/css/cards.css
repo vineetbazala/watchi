@@ -88,6 +88,8 @@
    ============================================ */
 
 .card-flip-wrapper {
+    overflow: hidden;
+    border-radius: var(--radius);
     flex: 0 0 200px;
     height: 260px;
     perspective: 1000px;
@@ -137,7 +139,7 @@
 }
 
 /* ============================================
-   CARD FRONT
+   CARD FRONT (with glass effect)
    ============================================ */
 
 .card-flip-front {
@@ -151,6 +153,36 @@
     background: var(--surface);
     border: 1px solid var(--border);
     cursor: pointer;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* Projector sweep */
+.card-flip-front::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 55%;
+    height: 100%;
+    background: linear-gradient(
+        105deg,
+        transparent 20%,
+        rgba(255, 255, 255, 0.06) 50%,
+        transparent 80%
+    );
+    transform: skewX(-15deg);
+    pointer-events: none;
+    z-index: 4;
+}
+
+.card-flip-wrapper:hover .card-flip-front::after {
+    animation: projectorSweep 0.55s ease forwards;
+}
+
+@keyframes projectorSweep {
+    from { left: -100%; }
+    to   { left: 160%; }
 }
 
 /* ============================================
@@ -260,28 +292,30 @@
     font-weight: 700;
     text-shadow: 0 1px 4px rgba(0,0,0,0.7);
 }
+
 /* DETAIL LINK */
-.card-detail-link{
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 5;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(13,13,15,0.55);
-  backdrop-filter: blur(4px);
-  color: var(--accent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  text-decoration: none;
-  opacity: 0;
-  transition: opacity .25s cubic-bezier(0.4,0,0.2,1), background .25s;
+.card-detail-link {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 5;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(13,13,15,0.55);
+    backdrop-filter: blur(4px);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity .25s cubic-bezier(0.4,0,0.2,1), background .25s;
 }
-.movie-card-h:hover .card-detail-link{ opacity: 1; }
-.card-detail-link:hover{ background: rgba(200,169,110,0.85); color: #0d0d0f; }
+
+.movie-card-h:hover .card-detail-link { opacity: 1; }
+.card-detail-link:hover { background: rgba(200,169,110,0.85); color: #0d0d0f; }
 
 /* ============================================
    CARD BACK — movie cards
@@ -502,6 +536,8 @@
 
 /* ============================================
    POSTER LIST — for watchlist, toprated pages
+   Poster is flush with the left/top/bottom edge of the card;
+   the card's overflow:hidden + border-radius clips the corners.
    ============================================ */
 
 .poster-list {
@@ -513,8 +549,9 @@
 
 .poster-list-card {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     gap: 16px;
+    min-height: 126px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -530,15 +567,23 @@
 
 .poster-list-img {
     width: 84px;
-    height: 126px;
-    object-fit: var(--radius-sm);
+    height: auto;
+    min-height: 126px;
+    align-self: stretch;
+    object-fit: cover;
+    object-position: center top;
+    border-radius: 0;
+    margin: 0;
     flex-shrink: 0;
+    display: block;
 }
 
 .poster-list-placeholder {
     width: 84px;
-    height: 126px;
-    border-radius: var(--radius-sm);
+    min-height: 126px;
+    align-self: stretch;
+    border-radius: 0;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -549,6 +594,8 @@
 
 .poster-list-info {
     flex: 1;
+    min-width: 0;
+    align-self: center;
     padding: 12px 16px 12px 0;
 }
 
@@ -564,6 +611,7 @@
 
 /* ── Top Rated rank number ── */
 .toprated-rank {
+    align-self: center;
     font-size: 28px;
     font-weight: 800;
     color: var(--accent);
@@ -572,55 +620,12 @@
     letter-spacing: -1px;
     flex-shrink: 0;
 }
-/* Glass effect on card front */
-.card-flip-front {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    border-radius: var(--radius);
-    overflow: hidden;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-}
-
-/* Projector sweep */
-.card-flip-front::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 55%;
-    height: 100%;
-    background: linear-gradient(
-        105deg,
-        transparent 20%,
-        rgba(255, 255, 255, 0.06) 50%,
-        transparent 80%
-    );
-    transform: skewX(-15deg);
-    pointer-events: none;
-    z-index: 4;
-}
-
-.card-flip-wrapper:hover .card-flip-front::after {
-    animation: projectorSweep 0.55s ease forwards;
-}
-
-@keyframes projectorSweep {
-    from { left: -100%; }
-    to   { left: 160%; }
-}
 
 /* ============================================
    FAVORITE HEART BUTTON
    ============================================ */
 
-.fav-btn{
+.fav-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -640,7 +645,7 @@
     transition: transform .2s cubic-bezier(0.4,0,0.2,1), background .2s, color .2s, border-color .2s;
 }
 
-.fav-btn svg{
+.fav-btn svg {
     width: 13px;
     height: 13px;
     fill: none;
@@ -648,31 +653,31 @@
     stroke-width: 2;
 }
 
-.fav-btn:hover{
+.fav-btn:hover {
     transform: scale(1.15);
     background: rgba(255,80,110,0.18);
     border-color: rgba(255,80,110,0.45);
     color: #ff5a78;
 }
 
-.fav-btn.is-fav{
+.fav-btn.is-fav {
     background: rgba(255,80,110,0.22);
     border-color: rgba(255,80,110,0.55);
     color: #ff5a78;
 }
 
-.fav-btn.is-fav svg{
+.fav-btn.is-fav svg {
     fill: currentColor;
 }
 
-@keyframes favPop{
+@keyframes favPop {
     0%   { transform: scale(1); }
     35%  { transform: scale(1.5); }
     60%  { transform: scale(0.85); }
     100% { transform: scale(1); }
 }
 
-.fav-btn.fav-pop{
+.fav-btn.fav-pop {
     animation: favPop .45s cubic-bezier(0.34,1.56,0.64,1);
 }
 
@@ -680,7 +685,7 @@
    SEARCH RESULT CARD
    ============================================ */
 
-.search-result-card{
+.search-result-card {
     display: flex;
     gap: 24px;
     background: var(--surface);
@@ -690,7 +695,7 @@
     align-items: flex-start;
 }
 
-.search-result-poster{
+.search-result-poster {
     flex-shrink: 0;
     width: 160px;
     aspect-ratio: 2/3;
@@ -699,13 +704,13 @@
     background: linear-gradient(135deg, #2a2a32, #131318);
 }
 
-.search-result-poster img{
+.search-result-poster img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.search-result-poster-fallback{
+.search-result-poster-fallback {
     width: 100%;
     height: 100%;
     display: flex;
@@ -714,15 +719,15 @@
     font-size: 40px;
 }
 
-.search-result-info{ flex: 1; min-width: 0; }
-.search-result-info h2{ font-size: 22px; margin-bottom: 6px; }
-.search-result-meta{ color: var(--text-muted); font-size: 13px; margin-bottom: 10px; }
-.search-result-badges{
+.search-result-info { flex: 1; min-width: 0; }
+.search-result-info h2 { font-size: 22px; margin-bottom: 6px; }
+.search-result-meta { color: var(--text-muted); font-size: 13px; margin-bottom: 10px; }
+.search-result-badges {
     display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
     margin: 6px 0 0;
 }
 
-.search-result-controls{
+.search-result-controls {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -732,7 +737,7 @@
     border-top: 1px solid var(--border);
 }
 
-.search-result-controls form{
+.search-result-controls form {
     display: flex;
     gap: 8px;
     align-items: center;
@@ -741,13 +746,121 @@
 }
 
 .search-result-controls input,
-.search-result-controls select{
+.search-result-controls select {
     width: auto;
     padding: 8px 12px;
     font-size: 13px;
 }
 
-@media (max-width: 640px){
-    .search-result-card{ flex-direction: column; }
-    .search-result-poster{ width: 120px; }
+@media (max-width: 640px) {
+    .search-result-card { flex-direction: column; }
+    .search-result-poster { width: 120px; }
+}
+
+/* ============================================
+   MOBILE — card rows, poster list
+   ============================================ */
+
+@media (max-width: 780px) {
+    /* Scroll arrows are pointless on touch — swiping IS the interaction */
+    .scroll-btn {
+        display: none;
+    }
+
+    .card-row-wrapper {
+        margin: 0 -16px;
+        padding: 0 16px;
+    }
+
+    .card-row {
+        padding: 16px 0 24px;
+        gap: 12px;
+    }
+
+    /* Card needs extra height on mobile to fit the back's content
+       (title, inputs, buttons) without clipping */
+    .card-flip-wrapper {
+        flex: 0 0 160px;
+        height: 260px;
+    }
+
+    .card-flip-back {
+        overflow-y: auto;
+        padding: 10px 8px 8px;
+    }
+
+    .card-flip-back input,
+    .card-flip-back select {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+
+    .flip-btn {
+        padding: 8px;
+        font-size: 11px;
+    }
+
+    .card-h-number {
+        font-size: 36px;
+    }
+
+    .card-h-title {
+        font-size: 13px;
+    }
+
+    /* Detail link (↗) needs to always be visible on touch — there's no hover state on mobile */
+    .card-detail-link {
+        opacity: 1;
+    }
+
+    /* Poster list rows (watchlist, top rated) — slightly smaller, still flush left */
+    .poster-list-card {
+        gap: 12px;
+        min-height: 108px;
+    }
+
+    .poster-list-img,
+    .poster-list-placeholder {
+        width: 72px;
+        min-height: 108px;
+        margin: 0;
+    }
+
+    .poster-list-info {
+        padding: 10px 12px 10px 0;
+    }
+
+    .poster-list-info h2 {
+        font-size: 14px;
+    }
+
+    .toprated-rank {
+        font-size: 22px;
+        padding: 0 12px 0 6px;
+    }
+
+    /* Search result card already has a 640px breakpoint above, this one
+       kicks in slightly earlier for tablets/large phones */
+    .search-result-card {
+        padding: 16px;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 420px) {
+    .card-flip-wrapper {
+        flex: 0 0 140px;
+        height: 240px;
+    }
+}
+
+@media (hover: none) {
+    .card-row .card-flip-wrapper:hover {
+        transform: none;
+        box-shadow: none;
+    }
+    .card-row:hover .card-flip-wrapper {
+        opacity: 1;
+        transform: none;
+    }
 }
