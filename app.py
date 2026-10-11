@@ -15,6 +15,8 @@ import db
 import auth
 import os
 app = Flask(__name__)
+import logging
+logging.getLogger("werkzeug").setLevel(logging.ERROR)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-only-fallback-change-this")
 db.init_app(app)
 auth.init_app(app)
@@ -844,7 +846,7 @@ def logout():
     flash("Logged out")
     return redirect(url_for("login"))
 
-UPLOAD_FOLDER = "static/avatars"
+UPLOAD_FOLDER = os.path.join(app.root_path, "static", "avatars")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
 
@@ -929,8 +931,11 @@ def suggest_external():
 
     try:
         omdb_type = "movie" if media_type == "movie" else "series"
-        url = f"http://www.omdbapi.com/?s={query}&type={omdb_type}&apikey={API_KEY}"
-        response = requests.get(url, timeout=5)
+        response = requests.get(
+            "https://www.omdbapi.com/",
+            params={"s": query, "type": omdb_type, "apikey": API_KEY},
+            timeout=5,
+        )
         data = response.json()
         results = []
         if data.get("Search"):
@@ -943,4 +948,4 @@ def suggest_external():
     except Exception as e:
         return jsonify([])
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=os.environ.get("FLASK_DEBUG") == "1", host="0.0.0.0", port=5000)

@@ -1,7 +1,14 @@
+import os
 import sqlite3
 from flask import g
 
-DATABASE = "watchi.db"
+# Always resolve paths from this file's folder, not from wherever the program
+# was started, so the app finds its files on a server too.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# WATCHI_DB_PATH lets a host point the database at a permanent location later.
+# If it isn't set, the database stays next to this file, as it does now.
+DATABASE = os.environ.get("WATCHI_DB_PATH", os.path.join(BASE_DIR, "watchi.db"))
 
 
 def get_db():
@@ -29,8 +36,12 @@ def init_db():
     """Wipes and recreates all tables from schema.sql.
     Run this once (see run_init_db.py) to set up watchi.db for the first time.
     WARNING: this deletes all existing data — only run it once, at the start."""
+    folder = os.path.dirname(DATABASE)
+    if folder:
+        os.makedirs(folder, exist_ok=True)
+
     db = get_db()
-    with open("schema.sql") as f:
+    with open(os.path.join(BASE_DIR, "schema.sql"), encoding="utf-8") as f:
         db.executescript(f.read())
 
 
