@@ -1,14 +1,16 @@
 -- Watchi database schema
--- Run once via init_db() to create these tables in watchi.db
+-- Run once via run_init_db.py to create these tables in watchi.db
+-- WARNING: the DROP TABLE lines delete all existing data.
 
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS movies;
 DROP TABLE IF EXISTS series;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
+    profile_image TEXT,                          -- e.g. "avatars/user_1.jpg", NULL = no photo
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -17,7 +19,7 @@ CREATE TABLE movies (
     user_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'watchlist',   -- "watched" or "watchlist"
-    rating INTEGER,                              -- NULL = not rated yet (see note below)
+    rating INTEGER,                              -- NULL = not rated yet
     poster TEXT,
     year TEXT,
     genre TEXT,
