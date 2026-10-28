@@ -101,7 +101,11 @@ def addmovie():
         api_data = fetch_movie_data(movie_name)
 
         if status == "watched":
-            rating = int(request.form["rating"])
+            rating_raw = request.form.get("rating", "").strip()
+            if not rating_raw.isdigit() or not 1 <= int(rating_raw) <= 10:
+                flash("Please enter a rating from 1 to 10")
+                return redirect(url_for("addmovie"))
+            rating = int(rating_raw)
             movie = Movie(movie_name, status, rating,
                          poster=api_data.get("poster", ""),
                          year=api_data.get("year", ""),
