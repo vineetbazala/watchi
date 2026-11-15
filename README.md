@@ -52,8 +52,6 @@ The demo account is shared and public, with sample movies and shows already adde
 
 <img width="1585" height="837" alt="Screenshot 2026-09-22 115258" src="https://github.com/user-attachments/assets/d3c96b32-a141-4dcc-a073-72bcf53cf3b5" />
 
-<!-- Add your mobile screenshots here: edit this file on GitHub and drag the images in, or paste their links. -->
-
 ---
 
 ## Run it locally
