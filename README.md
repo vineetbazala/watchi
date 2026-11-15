@@ -52,6 +52,14 @@ The demo account is shared and public, with sample movies and shows already adde
 
 <img width="1585" height="837" alt="Screenshot 2026-09-22 115258" src="https://github.com/user-attachments/assets/d3c96b32-a141-4dcc-a073-72bcf53cf3b5" />
 
+<p align="center">
+   <img width="240" alt="WhatsApp Image 2026-11-15 at 1 03 52 PM" src="https://github.com/user-attachments/assets/b0b3c460-201e-4412-84bc-7a824971cc57" />
+   <img width="240" alt="WhatsApp Image 2026-11-15 at 1 03 53 PM" src="https://github.com/user-attachments/assets/d6a02030-ff11-429e-a1d7-0a0d7af6a9f4" />
+   <img width="240" alt="WhatsApp Image 2026-2211-15 at 1 03 53 PM" src="https://github.com/user-attachments/assets/6f9ae8a5-9941-4ddb-abf0-11312e0b8e36" /> 
+</p>
+
+
+
 ---
 
 ## Run it locally
